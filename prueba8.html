@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centros de Salud - Huánuco</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+h2, h3 {
+  text-align: center;
+  margin-top: 20px;
+  color: #2c3e50;
+}
+
+nav {
+  background-color: #3498db;
+  padding: 10px;
+  text-align: center;
+}
+
+nav button {
+  background-color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+nav button:hover {
+  background-color: #ecf0f1;
+}
+
+.vista {
+  display: none;
+  padding: 20px;
+}
+
+.vista.activa {
+  display: block;
+}
+
+.selectores {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+select {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  min-width: 200px;
+}
+
+#map {
+  height: 500px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.galeria-categorias {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 20px;
+}
+
+.categoria-bloque {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.categoria-bloque h3 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  color: #2980b9;
+}
+
+.categoria-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.card-galeria {
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.card-galeria:hover {
+  transform: scale(1.05);
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  transition: transform 0.6s ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-back {
+  background-color: #ffffff;
+  transform: rotateY(180deg);
+  padding: 25px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-back h4 {
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: #2980b9;
+  text-align: center;
+}
+
+.card-back p {
+  font-size: 15px;
+  margin: 4px 0;
+  text-align: center;
+  color: #555;
+}
+
+button.ver-en-mapa {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 15px;
+  transition: background-color 0.3s;
+}
+
+button.ver-en-mapa:hover {
+  background-color: #2980b9;
+}
+
+@media (max-width: 600px) {
+  .card-inner {
+    height: 250px;
+  }
+
+  .card-back p {
+    font-size: 13px;
+  }
+
+  .card-back h4 {
+    font-size: 18px;
+  }
+
+  button.ver-en-mapa {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+
+  nav button {
+    margin: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  select {
+    font-size: 14px;
+    min-width: 150px;
+  }
+
+  .categoria-bloque h3 {
+    font-size: 20px;
+  }
+}
+    </style>
+</head>
+<body>
+  <nav>
+    <button onclick="mostrarVista('mapa')">Ver mapa</button>
+    <button onclick="mostrarVista('info')">Ver información</button>
+  </nav>
+
+  <div id="vista-mapa" class="vista activa">
+    <h2>Centros de Salud en Huánuco para combatir la anemia</h2>
+    <div class="selectores">
+      <select id="categoria">
+        <option value="">-- Categoría --</option>
+        <option value="hospitales">Hospitales</option>
+        <option value="postas">Postas</option>
+        <option value="clinicas">Clínicas</option>
+      </select>
+      <select id="destinos" disabled>
+        <option value="">-- Destino --</option>
+      </select>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <div id="vista-info" class="vista">
+    <h2>Catálogo de Centros de Salud</h2>
+    <div id="galeria-centros" class="galeria-categorias"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
+  <script>
+    const map = L.map('map').setView([-9.93, -76.24], 13);
+let controlRuta = null;
+let ubicacionActual = null;
+
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const centros = {
+  hospitales: [
+    {
+      nombre: "Hospital Regional Hermilio Valdizán",
+      coords: [-9.927490990076906, -76.23648609208338],
+      descripcion: "Hospital regional con atención especializada.",
+      direccion: "Jirón Jr. Hermilio Valdizan N° 950 Jr. Hermilio Valdizan N° 950 Huánuco-Huánuco-Huánuco",
+      horario: "Lun-Dom 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752963070/1_ybqech.jpg"
+    },
+    {
+      nombre: "Hospital Carlos Showing Ferrari",
+      coords: [-9.942751745547543, -76.2416897296667],
+      descripcion: "Hospital de nivel II con servicios médicos generales.",
+      direccion: "Micaela Bastidas 317, Amarilis 10003",
+      horario: "Lun-Dom 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752963070/2_l8juop.webp"
+    },
+    {
+      nombre: "Hospital Hermilio Valdizán",
+      coords: [-9.896712411259202, -76.2233923896235],
+      descripcion: "Hospital especializada en servicios generales y padecimientos.",
+      direccion: "18A 112, Amarilis 10000",
+      horario: "Lun-Dom 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752963974/make_this_image_HD_su39zq.png"
+    },
+    {
+      nombre: "Hospital EsSalud II Huánuco.",
+      coords: [-9.935604453121737, -76.23897186049365],
+      descripcion: "Hospital especializada en servicios generales y padecimientos.",
+      direccion: "Jose Olaya, Amarilis 10002",
+      horario: "Lun-Dom 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752963071/4_h7ccu0.png"
+    }
+  ],
+  postas: [
+    {
+      nombre: "Posta de Amarilis",
+      coords: [-9.9435, -76.2362],
+      descripcion: "Centro de atención primaria y padecimientos.",
+      direccion: "Av. Circunvalación, Amarilis 10003",
+      horario: "Lun-Vie 7:30 AM - 12:00 AM",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752963973/33333333_hpj2uz.webp"
+    },
+    {
+      nombre: "Centro de Salud Aparicio Pomares",
+      coords: [-9.932611681244863, -76.24978413844161],
+      descripcion: "Centro de salud capacitado para tratar diversos malestares, enfermedades y padecimientos.",
+      direccion: "Prolongación Junín Sin Número, entre los Jirones Micaela Bastidas e Independencia Huánuco-Huánuco-Huánuco",
+      horario: "Lun-Dom 7:30 AM - 7:30 AM",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752964854/cs-aparicio-pomares_wbvx43.webp"
+    }
+  ],
+  clinicas: [
+    {
+      nombre: "Centro Médico El Buen Samaritano",
+      coords: [-9.953962927505899, -76.24775581901518],
+      descripcion: "Especializada en atención general, laboratorio químico, pruebas, padecimientos y enfermedades.",
+      direccion: "2QW2+CW2, Jr Cayhuayna, Pillco Marca 190",
+      horario: "Todos los días, 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752964855/mejora_esta_imagen_e_tayudr.png"
+    },
+    {
+      nombre: "Clínica Huánuco E.I.R.L",
+      coords: [-9.928933159235969, -76.2351811055762],
+      descripcion: "Servicios médicos y laboratorio clínico.",
+      direccion: "Jirón Jr. Constitución Nº 980, Huánuco-Huánuco-Huánuco",
+      horario: "Lun-Sáb 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752964856/mejora_esta_imagen_t_fqesyv.png"
+    },
+    {
+      nombre: "Clínica Bolívar",
+      coords: [-9.924740016276205, -76.23938115824545],
+      descripcion: "Centro de salud especializada en padecimientos, enfermedades y servicios generales.",
+      direccion: "Jirón Progreso 351, Huánuco 10001",
+      horario: "Lun-Sáb 24 horas",
+      imagen: "https://res.cloudinary.com/dbfrmfmd8/image/upload/v1752963069/9_nuik5b.jpg"
+    },
+    {
+      nombre: "Clínica San Gabriel Arcángel",
+      coords: [-9.926142447994593, -76.24100819393337],
+      descripcion: "Servicio médico general especializado.",
+      direccion: "Jirón Huallayco 1226, Huánuco 10001",
+      horario: "Lun-Sáb 24 horas",
+      imagen: "10.jpg"
+    }
+  ]
+};
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    ubicacionActual = [pos.coords.latitude, pos.coords.longitude];
+    map.setView(ubicacionActual, 15);
+    L.marker(ubicacionActual).addTo(map).bindPopup("Estás aquí").openPopup();
+  },
+  (err) => {
+    alert("Error al obtener ubicación: " + err.message);
+  },
+  { enableHighAccuracy: true }
+);
+document.getElementById('categoria').addEventListener('change', (e) => {
+  const tipo = e.target.value;
+  const destinos = document.getElementById('destinos');
+  destinos.innerHTML = `<option value="">-- Destino --</option>`;
+
+  if (centros[tipo]) {
+    centros[tipo].forEach((centro, i) => {
+      const opt = document.createElement('option');
+      opt.value = `${tipo}-${i}`;
+      opt.textContent = centro.nombre;
+      destinos.appendChild(opt);
+    });
+    destinos.disabled = false;
+  } else {
+    destinos.disabled = true;
+  }
+});
+document.getElementById('destinos').addEventListener('change', (e) => {
+  const valor = e.target.value;
+  if (!valor || !ubicacionActual) return;
+
+  const [tipo, index] = valor.split('-');
+  const centro = centros[tipo][index];
+  mostrarRuta(centro.coords);
+});
+
+function mostrarRuta(coords) {
+  if (!ubicacionActual) {
+    alert("Ubicación actual no disponible.");
+    return;
+  }
+
+  const destino = L.latLng(...coords);
+  if (controlRuta) map.removeControl(controlRuta);
+
+  controlRuta = L.Routing.control({
+    waypoints: [L.latLng(...ubicacionActual), destino],
+    routeWhileDragging: false,
+    show: false,
+    addWaypoints: false,
+    createMarker: () => null
+  }).addTo(map);
+
+  mostrarVista('mapa');
+}
+function mostrarVista(vista) {
+  document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
+  document.getElementById(`vista-${vista}`).classList.add('activa');
+}
+const galeria = document.getElementById('galeria-centros');
+
+Object.entries(centros).forEach(([categoria, lista]) => {
+  const bloque = document.createElement('div');
+  bloque.className = 'categoria-bloque';
+
+  const titulo = document.createElement('h3');
+  titulo.textContent = categoria.charAt(0).toUpperCase() + categoria.slice(1);
+  bloque.appendChild(titulo);
+
+  const galeriaGrid = document.createElement('div');
+  galeriaGrid.className = 'categoria-galeria';
+
+  lista.forEach((centro) => {
+    const card = document.createElement('div');
+    card.className = 'card-galeria';
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="${centro.imagen}" alt="${centro.nombre}" />
+        </div>
+        <div class="card-back">
+          <h4>${centro.nombre}</h4>
+          <p>${centro.descripcion}</p>
+          <p><strong>Dirección:</strong> ${centro.direccion}</p>
+          <p><strong>Horario:</strong> ${centro.horario}</p>
+          <button class="ver-en-mapa">Ver en mapa</button>
+        </div>
+      </div>
+    `;
+
+    card.onclick = function (e) {
+      if (!e.target.classList.contains('ver-en-mapa')) {
+        card.querySelector('.card-inner').classList.toggle('flipped');
+      }
+    };
+
+    card.querySelector('.ver-en-mapa').addEventListener('click', (e) => {
+      e.stopPropagation();
+      mostrarRuta(centro.coords);
+    });
+
+    galeriaGrid.appendChild(card);
+  });
+
+  bloque.appendChild(galeriaGrid);
+  galeria.appendChild(bloque);
+});
+  </script>
+</body>
+</html>
