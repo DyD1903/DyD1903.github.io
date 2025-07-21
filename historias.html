@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Información sobre la Anemia | Fuerza Roja</title>
+  <!-- ======= ICONOS Y FUENTE ======= -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+  <!-- ======= ESTILOS PRINCIPALES ======= -->
+  <link rel="stylesheet" href="estilohistorias.css">
+</head>
+<body>
+  <!-- =================== NAVBAR PRINCIPAL =================== -->
+  <header class="navbar fixed-top">
+    <div class="container">
+      <!-- Logo y botón YO -->
+      <div class="logo" style="display: flex; align-items: center; gap: 18px;">
+        <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/w_400,h_300,c_fill/v1752963070/444_iiaa4n.png" alt="Fuerza Roja">
+        <button id="yo-btn" class="yo-btn" aria-label="Ver perfil" tabindex="0">
+          <i class="fas fa-user-circle"></i> <span class="yo-label">YO</span>
+        </button>
+      </div>
+      <!-- Botón hamburguesa para menú móvil -->
+      <div class="menu-toggle" id="menu-toggle" aria-label="Abrir menú" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- Menú de navegación principal -->
+      <nav>
+        <ul id="main-menu">
+            <li><a href="inicio.html" id="reload-inicio">INICIO</a></li>
+          <li><a href="recetas.html">RECETAS</a></li>
+          <li><a href="planificador.html">PLANIFICADOR</a></li>
+          <li><a href="prueba6.html">HISTORIAS</a></li>
+          <li><a href="ubicacion.html">UBICACIÓN</a></li>
+          <li><a href="#" class="button">TESTIMONIOS</a></li>
+        </ul>
+      </nav>
+      <!-- Panel YO: Muestra datos del usuario -->
+      <div id="yo-panel" class="yo-panel">
+  <button class="yo-close" id="yo-close" aria-label="Cerrar">&times;</button>
+  <div class="yo-content">
+    <h3>Bienvenido a Fuerza Roja, <span id="yo-nombre"></span></h3>
+    <p><strong>Nombre:</strong> <span id="yo-nombre2"></span></p>
+    <p><strong>Correo:</strong> <span id="yo-correo"></span></p>
+  </div>
+</div>
+  </header>
+
+  <!-- =================== SCRIPTS DE FUNCIONALIDAD =================== -->
+  <script>
+    // Mostrar datos del usuario desde localStorage en el panel YO
+     document.getElementById('yo-nombre').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-nombre2').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-correo').textContent = localStorage.fuerzaRojaCorreo || "";
+
+    // Responsive navbar toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainMenu = document.getElementById('main-menu');
+    menuToggle.addEventListener('click', () => {
+      mainMenu.classList.toggle('open');
+    });
+    menuToggle.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        mainMenu.classList.toggle('open');
+      }
+    });
+    // Cerrar menú al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!menuToggle.contains(e.target) && !mainMenu.contains(e.target)) {
+        mainMenu.classList.remove('open');
+      }
+    });
+    // YO panel toggle
+    const yoBtn = document.getElementById('yo-btn');
+    const yoPanel = document.getElementById('yo-panel');
+    const yoClose = document.getElementById('yo-close');
+    yoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      yoPanel.classList.toggle('active');
+    });
+    yoBtn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        yoPanel.classList.toggle('active');
+      }
+    });
+    yoClose.addEventListener('click', () => {
+      yoPanel.classList.remove('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!yoPanel.contains(e.target) && !yoBtn.contains(e.target)) {
+        yoPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <main>
+    <!-- =================== SECCIÓN DE INFORMACIÓN PRINCIPAL =================== -->
+    <section class="info-section">
+      <h1>Conoce más sobre la anemia</h1>
+      <h2>Selecciona un modo</h2>
+      <div class="mode-selection">
+        <button id="childModeBtn">Modo Infantil</button>
+        <button id="adultModeBtn">Modo Adulto</button>
+      </div>
+    </section>
+
+    <!-- =================== CONTENIDO MODO INFANTIL =================== -->
+    <div id="childContent" class="content-section" style="display:none;">
+      <h2>Información sobre la Anemia para Niños</h2>
+      <p>¡Aprende sobre la anemia de forma divertida!</p>
+      <div class="video-box">
+        <iframe src="https://www.youtube.com/embed/-hK45f4WYcY" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- =================== CONTENIDO MODO ADULTO =================== -->
+    <div id="adultContent" class="content-section" style="display:none;">
+      <h2>Información sobre la Anemia para Adultos</h2>
+      <div class="adult-options">
+        <button id="adultVideoBtn">Ver Video Informativo</button>
+        <button id="adultNewsBtn">Leer Noticias</button>
+      </div>
+
+      <!-- ======= VIDEOS INFORMATIVOS ADULTO ======= -->
+      <div id="adultVideo" class="content-item" style="display:none;">
+        <h3>Videos Informativos</h3>
+        <p>Aquí tienes dos videos para informarte más a fondo sobre la anemia:</p>
+        <div class="video-box">
+          <iframe src="https://drive.google.com/file/d/1RePhPOguF6Z5DQrnP9muEk56VkKYYI6P/preview" allowfullscreen></iframe>
+        </div>
+        <div class="video-box">
+          <iframe src="https://www.youtube.com/embed/9IDdXbslq2I" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- ======= NOTICIAS SOBRE ANEMIA ADULTO ======= -->
+      <div id="adultNews" class="content-item" style="display:none;">
+        <h3>Noticias sobre la Anemia</h3>
+        <div class="news-grid">
+          <!-- Tarjeta de noticia 1 -->
+          <div class="news-card">
+            <img src="https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIP.F0zL8wZ1EEfB2EvZzeyAzAHaE8%3Fpid%3DApi&sp=1752896288Taf78c1466485dd594f68b739cd6c00173702170d6b6bfc9a3009fc0ec1404b45" alt="Imagen de Noticia sobre Anemia" />
+            <h4>La anemia infantil aumentó en 20 de 25 regiones desde el 2019</h4>
+            <p>La anemia infantil genera cada vez más alerta en el país. La reciente Encuesta Demográfica y de Salud Familiar reveló que, por tercer año consecutivo, el porcentaje de esta enfermedad tuvo un aumento de 0,7%</p>
+            <a href="https://ipe.org.pe/la-anemia-infantil-aumento-en-20-de-25-regiones-desde-el-2019/" target="_blank" class="news-button">Leer Noticia Completa</a>
+          </div>
+          <!-- Tarjeta de noticia 2 -->
+          <div class="news-card">
+            <img src="https://www.paho.org/sites/default/files/whatsapp_image_2024-07-05_at_11.41.21_2_0.jpeg" alt="Campaña MINSA">
+            <h4>El Perú fortalece sus compromisos en la lucha contra la anemia</h4>
+            <p>En un esfuerzo conjunto por abordar la problemática de la anemia infantil en el país las agencias de Naciones Unidas</p>
+            <a href="https://www.paho.org/es/noticias/5-7-2024-peru-fortalece-sus-compromisos-lucha-contra-anemia" target="_blank" class="news-button">Leer Noticia Completa</a>
+          </div>
+          <!-- Tarjeta de noticia 3 -->
+          <div class="news-card">
+            <img src="https://cdn.www.gob.pe/uploads/document/file/23872/ni%C3%B1aqali.jpg" alt="Programa regional">
+            <h4>Programas sociales ayudarán a reducir los niveles de anemia en el país</h4>
+            <p>“Los Programas Sociales Cuna Más, Qali Warma, Foncodes, Juntos, Pensión 65, Contigo y PAIS, a través de sus promotores y agentes comunitarios trabajarán de manera directa en la lucha contra la anemia”.</p>
+            <a href="https://www.gob.pe/institucion/midis/noticias/12124-programas-sociales-ayudaran-a-reducir-los-niveles-de-anemia-en-el-pais" target="_blank" class="news-button">Leer Noticia Completa</a>
+          </div>
+          <!-- Tarjeta de noticia 4 -->
+          <div class="news-card">
+            <img src="https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.xUQpsPDjmqCBTKaX7N7RGwHaE8%3Fr%3D0%26pid%3DApi&sp=1752895484T8a87268f7e4e9898a6efdfb9954799acffa750ae1c7647b972aeafb05a8ed33d" alt="Niños y salud">
+            <h4>Expertos se pronuncian sobre aumento de la anemia infantil en el país</h4>
+            <p>“El aumento de la anemia infantil es el resultado de no contar con un adecuado diagnóstico de la verdadera situación nutricional y de salud que tienen los niños del país.</p>
+            <a href="https://inversionenlainfancia.net/?blog/entrada/noticia/1853" target="_blank" class="news-button">Leer Noticia Completa</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =================== FOOTER =================== -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Fuerza Roja. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- =================== SCRIPTS DE INTERACCIÓN DE MODOS =================== -->
+  <script>
+    // Mostrar modo infantil/adulto
+    document.getElementById('childModeBtn').addEventListener('click', function() {
+      document.getElementById('childContent').style.display = 'block';
+      document.getElementById('adultContent').style.display = 'none';
+    });
+    document.getElementById('adultModeBtn').addEventListener('click', function() {
+      document.getElementById('adultContent').style.display = 'block';
+      document.getElementById('childContent').style.display = 'none';
+    });
+    // Mostrar video/noticias en modo adulto
+    document.getElementById('adultVideoBtn').addEventListener('click', function() {
+      document.getElementById('adultVideo').style.display = (document.getElementById('adultVideo').style.display === 'block') ? 'none' : 'block';
+      document.getElementById('adultNews').style.display = 'none';
+    });
+    document.getElementById('adultNewsBtn').addEventListener('click', function() {
+      document.getElementById('adultNews').style.display = (document.getElementById('adultNews').style.display === 'block') ? 'none' : 'block';
+      document.getElementById('adultVideo').style.display = 'none';
+    });
+  </script>
+</body>
+</html>

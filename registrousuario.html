@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuerza Roja - Usuario</title>
+  <!-- ======= ICONOS Y FUENTE ======= -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estiloregistro.css">
+</head>
+<body>
+  <div class="container">
+    <!-- ======= BOTONES PARA CAMBIAR ENTRE LOGIN Y REGISTRO ======= -->
+    <div class="toggle-buttons">
+      <button id="loginBtn">Iniciar Sesión</button>
+      <button id="registerBtn">Registrarse</button>
+    </div>
+    <div class="form-container">
+      <!-- ======= FORMULARIO DE INICIO DE SESIÓN ======= -->
+      <form id="loginForm" class="form">
+        <h2>Iniciar Sesión</h2>
+        <input type="text" placeholder="Nombre Completo" required id="loginName">
+        <input type="email" placeholder="Correo Electrónico" required id="loginEmail">
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit">Entrar</button>
+      </form>
+      <!-- ======= FORMULARIO DE REGISTRO ======= -->
+      <form id="registerForm" class="form">
+        <h2>Registrarse</h2>
+        <input type="text" placeholder="Nombre Completo" required id="registerName">
+        <input type="email" placeholder="Correo Electrónico" required id="registerEmail">
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit">Crear Cuenta</button>
+      </form>
+    </div>
+  </div>
+  <!-- ======= SCRIPTS DE FUNCIONALIDAD ======= -->
+  <script>
+  // Selecciona los botones y formularios
+  const btnLogin = document.getElementById('loginBtn');
+  const btnRegister = document.getElementById('registerBtn');
+  const formLogin = document.getElementById('loginForm');
+  const formRegister = document.getElementById('registerForm');
+
+  // Al cargar la página, muestra el formulario de login
+  window.onload = function() {
+    formLogin.classList.add('active');
+    formRegister.classList.remove('active');
+  };
+
+  // Cuando haces clic en "Iniciar Sesión", muestra ese formulario
+  btnLogin.onclick = function() {
+    formLogin.classList.add('active');
+    formRegister.classList.remove('active');
+  };
+
+  // Cuando haces clic en "Registrarse", muestra ese formulario
+  btnRegister.onclick = function() {
+    formRegister.classList.add('active');
+    formLogin.classList.remove('active');
+  };
+
+  // Cuando envías el formulario de registro
+  formRegister.onsubmit = function(e) {
+    e.preventDefault(); // Evita que la página se recargue
+    // Guarda el nombre y correo en localStorage
+    localStorage.setItem('fuerzaRojaNombre', document.getElementById('registerName').value);
+    localStorage.setItem('fuerzaRojaCorreo', document.getElementById('registerEmail').value);
+    // Ve a la página principal
+    window.location.href = '../inicio.html';
+  };
+
+  // Cuando envías el formulario de login
+  formLogin.onsubmit = function(e) {
+    e.preventDefault();
+    localStorage.setItem('fuerzaRojaNombre', document.getElementById('loginName').value);
+    localStorage.setItem('fuerzaRojaCorreo', document.getElementById('loginEmail').value);
+    window.location.href = '../inicio.html';
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horario | Fuerza Roja</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+   <link href="estilogeneral.css" rel="stylesheet">
+  
+</head>
+<body>
+  <!-- NAVBAR igual que index.html -->
+  <header class="navbar fixed-top">
+    <div class="container">
+      <div class="logo" style="display: flex; align-items: center; gap: 18px;">
+        <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/w_400,h_300,c_fill/v1752963070/444_iiaa4n.png" alt="Fuerza Roja">
+        <button id="yo-btn" class="yo-btn" aria-label="Ver perfil" tabindex="0">
+          <i class="fas fa-user-circle"></i> <span class="yo-label">YO</span>
+        </button>
+      </div>
+      <div class="menu-toggle" id="menu-toggle" aria-label="Abrir menú" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <nav>
+        <ul id="main-menu">
+          <li><a href="inicio.html">INICIO</a></li>
+          <li><a href="recetas.html">RECETAS</a></li>
+          <li><a href="planificador.html">PLANIFICADOR</a></li>
+          <li><a href="historias.html">HISTORIAS</a></li>
+          <li><a href="ubicacion.html">UBICACIÓN</a></li>
+          <li><a href="#" class="button">TESTIMONIOS</a></li>
+        </ul>
+      </nav>
+      <div id="yo-panel" class="yo-panel">
+  <button class="yo-close" id="yo-close" aria-label="Cerrar">&times;</button>
+  <div class="yo-content">
+    <h3>Bienvenido a Fuerza Roja, <span id="yo-nombre"></span></h3>
+    <p><strong>Nombre:</strong> <span id="yo-nombre2"></span></p>
+    <p><strong>Correo:</strong> <span id="yo-correo"></span></p>
+  </div>
+</div>
+  </header>
+
+  <!-- SCRIPTS NAVBAR Y PANEL YO -->
+  <script>
+    // Responsive navbar toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainMenu = document.getElementById('main-menu');
+    menuToggle.addEventListener('click', () => {
+      mainMenu.classList.toggle('open');
+    });
+    menuToggle.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        mainMenu.classList.toggle('open');
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!menuToggle.contains(e.target) && !mainMenu.contains(e.target)) {
+        mainMenu.classList.remove('open');
+      }
+    });
+    // Panel YO
+     document.getElementById('yo-nombre').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-nombre2').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-correo').textContent = localStorage.fuerzaRojaCorreo || "";
+
+    const yoBtn = document.getElementById('yo-btn');
+    const yoPanel = document.getElementById('yo-panel');
+    const yoClose = document.getElementById('yo-close');
+    yoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      yoPanel.classList.toggle('active');
+    });
+    yoBtn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        yoPanel.classList.toggle('active');
+      }
+    });
+    yoClose.addEventListener('click', () => {
+      yoPanel.classList.remove('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!yoPanel.contains(e.target) && !yoBtn.contains(e.target)) {
+        yoPanel.classList.remove('active');
+      }
+    });
+    // Limpiar inputs del horario
+    function limpiar() {
+      const opcion = confirm("¿Estás seguro de que quieres iniciar una nueva semana? ¡Todos los datos se borrarán!");
+      if (opcion) {
+        document.querySelectorAll('.r').forEach(function(inputElement) {
+          inputElement.value = '';
+        });
+      }
+    }
+  </script>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+    <section class="horario-section">
+      <h1>Mi Horario Semanal de Recetas para Combatir la Anemia</h1>
+      <h2>Organiza tus comidas y actividades</h2>
+      <button id="limpiar" onclick="limpiar()">Nueva Semana</button>
+      <div style="overflow-x:auto;">
+        <table class="horario-table">
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Desayuno</th>
+              <th>Almuerzo</th>
+              <th>Cena</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lunes</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del lunes"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del lunes"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del lunes"></td>
+            </tr>
+            <tr>
+              <td>Martes</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del martes"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del martes"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del martes"></td>
+            </tr>
+            <tr>
+              <td>Miércoles</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del miércoles"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del miércoles"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del miércoles"></td>
+            </tr>
+            <tr>
+              <td>Jueves</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del jueves"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del jueves"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del jueves"></td>
+            </tr>
+            <tr>
+              <td>Viernes</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del viernes"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del viernes"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del viernes"></td>
+            </tr>
+            <tr>
+              <td>Sábado</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del sábado"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del sábado"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del sábado"></td>
+            </tr>
+            <tr>
+              <td>Domingo</td>
+              <td><input type="text" class="r" placeholder="Receta para el desayuno del domingo"></td>
+              <td><input type="text" class="r" placeholder="Receta para el almuerzo del domingo"></td>
+              <td><input type="text" class="r" placeholder="Receta para la cena del domingo"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="recomendaciones">
+        <h2>Consejos para Combatir la Anemia</h2>
+        <ul>
+          <li>Consume alimentos ricos en hierro hemo (animal): carnes rojas, hígado, pescado, mariscos.</li>
+          <li>Incluye alimentos ricos en hierro no hemo (vegetal): lentejas, espinacas, garbanzos, frijoles, cereales fortificados.</li>
+          <li>Combina hierro no hemo con Vitamina C (cítricos, pimientos, kiwi) para mejorar la absorción.</li>
+          <li>Evita el consumo de té, café y lácteos junto con las comidas principales, ya que pueden inhibir la absorción de hierro.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER igual que index.html -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Fuerza Roja. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

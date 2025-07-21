@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- =================== METADATOS Y FUENTES =================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuerza Roja</title>
+  <!-- Iconos FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Fuente principal -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+  <!-- Estilos globales -->
+  <link rel="stylesheet" href="estilogeneral.css">
+</head>
+<body>
+  <!-- =================== NAVBAR: Menú principal y acceso rápido =================== -->
+  <header class="navbar fixed-top">
+    <div class="container">
+      <!-- Logo y botón YO (perfil) -->
+      <div class="logo" style="display: flex; align-items: center; gap: 18px;">
+        <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752963070/444_iiaa4n.png" alt="Fuerza Roja">
+        <button id="yo-btn" class="yo-btn" aria-label="Ver perfil" tabindex="0">
+          <i class="fas fa-user-circle"></i> <span class="yo-label">YO</span>
+        </button>
+      </div>
+      <!-- Botón hamburguesa para menú móvil -->
+      <div class="menu-toggle" id="menu-toggle" aria-label="Abrir menú" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- Menú de navegación principal -->
+      <nav>
+        <ul id="main-menu">
+          <li><a href="inicio.html" id="reload-inicio">INICIO</a></li>
+          <li><a href="recetas.html">RECETAS</a></li>
+          <li><a href="planificador.html">PLANIFICADOR</a></li>
+          <li><a href="prueba6.html">HISTORIAS</a></li>
+          <li><a href="ubicacion.html">UBICACIÓN</a></li>
+          <li><a href="#testimonios" class="button">TESTIMONIOS</a></li>
+        </ul>
+      </nav>
+      <!-- Panel YO: Muestra datos del usuario -->
+     <!-- Panel YO en index.html -->
+<div id="yo-panel" class="yo-panel">
+  <button class="yo-close" id="yo-close" aria-label="Cerrar">&times;</button>
+  <div class="yo-content">
+    <h3>Bienvenido a Fuerza Roja, <span id="yo-nombre"></span></h3>
+    <p><strong>Nombre:</strong> <span id="yo-nombre2"></span></p>
+    <p><strong>Correo:</strong> <span id="yo-correo"></span></p>
+  </div>
+</div>
+  </header>
+
+  <!-- =================== SCRIPTS DE FUNCIONALIDAD =================== -->
+  <script>
+   
+    // Muestra datos del usuario en el panel YO desde localStorage
+
+  document.getElementById('yo-nombre').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-nombre2').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-correo').textContent = localStorage.fuerzaRojaCorreo || "";
+
+
+    // Menú hamburguesa responsive
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainMenu = document.getElementById('main-menu');
+    menuToggle.addEventListener('click', () => {
+      mainMenu.classList.toggle('open');
+    });
+    menuToggle.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        mainMenu.classList.toggle('open');
+      }
+    });
+    // Cierra el menú al hacer click fuera o en un enlace
+    document.addEventListener('click', (e) => {
+      if (!menuToggle.contains(e.target) && !mainMenu.contains(e.target)) {
+        mainMenu.classList.remove('open');
+      }
+    });
+    mainMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mainMenu.classList.remove('open');
+      });
+    });
+    // Panel YO toggle
+    const yoBtn = document.getElementById('yo-btn');
+    const yoPanel = document.getElementById('yo-panel');
+    const yoClose = document.getElementById('yo-close');
+    yoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      yoPanel.classList.toggle('active');
+    });
+    yoBtn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        yoPanel.classList.toggle('active');
+      }
+    });
+    yoClose.addEventListener('click', () => {
+      yoPanel.classList.remove('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!yoPanel.contains(e.target) && !yoBtn.contains(e.target)) {
+        yoPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <!-- =================== CONTENIDO PRINCIPAL =================== -->
+  <main class="main-content">
+    <!-- =================== ACORDEÓN VISUAL DE RECETAS =================== -->
+    <section style="background: var(--beige);padding:32px 0 16px 0;">
+      <ul class="accordion">
+        <!-- Cada <li> es una receta visual con imagen y nombre -->
+         <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752959943/33_gdcog1.png" alt="Descripción 1" />
+          <div class="content">
+            <span>
+              <h2>Panqueque de Plátano</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019181/ella-olsson-uG1jwfpCRhg-unsplash_kvxzhk.jpg" alt="Descripción 2" />
+          <div class="content">
+            <span>
+              <h2>Pastel de Cacao</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752959943/33333_zefxhf.webp" alt="Descripción 3" />
+          <div class="content">
+            <span>
+              <h2>Ensalada de frutas</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto/v1752959943/postres-saludables-para-incluir-en-cualquier-dieta-400x300_s76siy.jpg" alt="Descripción 4" />
+          <div class="content">
+            <span>
+              <h2>Queque de Zanahoria</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752959943/3445_otjik6.jpg" alt="Descripción 5" />
+          <div class="content">
+            <span>
+              <h2>Hot cakes Sangrecita</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753020898/photo-1626790222141-82ae8314d025_k7zueh.avif" alt="Descripción 6" />
+          <div class="content">
+            <span>
+              <h2>Malteada de kiwi</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752961555/c932d10ca399d13a2f43b60049ba703c_q8kgzi.jpg" alt="Descripción 7" />
+          <div class="content">
+            <span>
+              <h2>Relleno de manzana</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752960580/toa-heftiba-OSwea3yxjT0-unsplash_l3lozt.jpg" alt="Descripción 7" />
+          <div class="content">
+            <span>
+              <h2>Torta de espinaca</h2>
+            </span>
+          </div>
+        </li>
+        <li>
+          <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto/v1752960575/dulces-saludables_wrhexu.jpg" alt="Descripción 7" />
+          <div class="content">
+            <span>
+              <h2>Queque de Frutos secos</h2>
+            </span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- =================== HERO PRINCIPAL: Imagen, título y botón =================== -->
+    <section class="hero-section">
+      <div class="hero-bg-anim"></div>
+      <div class="hero-content">
+        <img src="imagenes/fuerzaroja.jpg" alt="Imagen Principal Fuerza Roja" class="main-image">
+        <h1>FUERZA ROJA</h1>
+        <p>TU SALUD NOS IMPORTA POR ESO CALCULA SI TIENES ANEMIA</p>
+        <a href="anemia_1.html" class="call-to-action-button">CALCULAR</a>
+      </div>
+    </section>
+
+    <!-- =================== SEPARADOR SVG =================== -->
+    <svg class="svg-separator" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="var(--beige)" d="M0,0 C480,60 960,0 1440,60 L1440,60 L0,60 Z"></path>
+    </svg>
+
+    <!-- =================== SECCIÓN NOSOTROS: Historia y misión =================== -->
+   <section class="about-us-section">
+      <div class="container">
+        <h2 class="section-title">NOSOTROS</h2>
+        <div class="about-us-content" style="align-items: center; justify-content: center;">
+          <div class="about-us-image" style="display: flex; align-items: center; justify-content: center;">
+           <div class="media" style="position: relative; width: 520px; height: 340px; max-width: 100%; border-radius: 18px; overflow: hidden; box-shadow: 0 5px 24px rgba(217,4,41,0.07);">
+              <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto/v1752949979/imagen_qs4wge.jpg" alt="Fuerza Roja Historia" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s;">
+              <video src="https://res.cloudinary.com/dbfrmfmd8/video/upload/f_auto,q_auto/v1752948721/viedooooo_mdci3o.mp4"  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; transition: opacity 0.3s;" muted loop></video>
+            </div>
+          </div>
+          <div class="about-us-text">
+            <h3>¡Esto es FUERZA ROJA!</h3>
+            <p>Fuerza Roja nació como un proyecto con un solo objetivo: ayudar a las personas a prevenir y combatir la anemia a través de la información, la motivación y la buena alimentación. Creemos que la salud es un derecho y que todos merecen sentirse fuertes y llenos de energía.</p>
+            <p>En nuestra plataforma encontrarás calculadoras, recetas saludables, consejos prácticos y testimonios reales de personas que, como tú, decidieron dar un paso hacia el bienestar. Nos mueve la pasión por el cambio y el deseo de acompañarte en cada etapa de tu camino.</p>
+            <p>¡Gracias por confiar en Fuerza Roja! Juntos, podemos transformar la salud y la vida de nuestra comunidad.</p>
+          </div>
+        </div>
+        <script>
+          // Efecto hover para mostrar el video en vez de la imagen
+          const mediaDiv = document.querySelector('.about-us-image .media');
+          const img = mediaDiv.querySelector('img');
+          const video = mediaDiv.querySelector('video');
+          mediaDiv.addEventListener('mouseenter', () => {
+            img.style.opacity = '0';
+            video.style.opacity = '1';
+            video.play();
+          });
+          mediaDiv.addEventListener('mouseleave', () => {
+            img.style.opacity = '1';
+            video.style.opacity = '0';
+            video.pause();
+            video.currentTime = 0;
+          });
+        </script>
+      </div>
+    </section>
+    <!-- =================== SEPARADOR SVG =================== -->
+    <svg class="svg-separator" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="var(--blanco)" d="M0,60 C480,0 960,60 1440,0 L1440,60 L0,60 Z"></path>
+    </svg>
+
+    <!-- =================== SECCIÓN RECETAS SALUDABLES =================== -->
+    <section class="recipes-section">
+      <div class="container">
+        <h2 class="section-title">RECETAS SALUDABLES</h2>
+        <div class="recipes-grid">
+          <!-- Cada .recipe-card es una receta con imagen, nombre y botón -->
+          <div class="recipe-card">
+            <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/1er_ochuvq.jpg" alt="Receta 1">
+            <div class="card-content">
+              <h3>Lentejas estofadas</h3>
+              <span style="display:inline-block;background:#ffe3e3;color:#d90429;font-size:0.95em;padding:2px 10px;border-radius:8px;margin-bottom:6px;">Hierro No Hemo</span>
+              <p>Una ensalada rica en hierro y vitaminas para un impulso de energía. Perfecta para el almuerzo.</p>
+              <a href="ElRecetario.html" class="card-button">Ver Receta</a>
+            </div>
+          </div>
+           <div class="recipe-card">
+            <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto/v1753019662/2da_t79tu9.jpg" alt="Receta 2">
+            <div class="card-content">
+              <h3>Sálmon al horno</h3>
+              <span style="display:inline-block;background:#fff0f3;color:#a30015;font-size:0.95em;padding:2px 10px;border-radius:8px;margin-bottom:6px;">Vitamina C</span>
+              <p>Delicioso batido lleno de antioxidantes y nutrientes esenciales para tu salud.</p>
+              <a href="ElRecetario.html" class="card-button">Ver Receta</a>
+            </div>
+          </div>
+          <div class="recipe-card">
+            <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/3era_m6pyya.jpg" alt="Receta 3">
+            <div class="card-content">
+              <h3>Batido Verde</h3>
+              <span style="display:inline-block;background:#f5e9da;color:#d90429;font-size:0.95em;padding:2px 10px;border-radius:8px;margin-bottom:6px;">Hierro No Hemo</span>
+              <p>Un plato clásico y nutritivo, ideal para aumentar tus niveles de hierro de forma natural.</p>
+              <a href="ElRecetario.html" class="card-button">Ver Receta</a>
+            </div>
+          </div>
+          <div class="recipe-card">
+            <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/4ta_qt3dxu.jpg" alt="Receta 4">
+            <div class="card-content">
+              <h3>Pollo al Horno con Espinacas</h3>
+              <span style="display:inline-block;background:#ffe3e3;color:#a30015;font-size:0.95em;padding:2px 10px;border-radius:8px;margin-bottom:6px;">Hierro Hemo</span>
+              <p>Combinación perfecta de proteínas y hierro para una cena completa y balanceada.</p>
+              <a href="ElRecetario.html" class="card-button">Ver Receta</a>
+            </div>
+          </div>
+          <div class="recipe-card">
+            <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/5ta_yadnnp.jpg" alt="Receta 5">
+            <div class="card-content">
+              <h3>Tortilla de Espinacas</h3>
+              <span style="display:inline-block;background:#fff0f3;color:#d90429;font-size:0.95em;padding:2px 10px;border-radius:8px;margin-bottom:6px;">Hierro No Hemo</span>
+              <p>Una opción rápida y saludable, rica en nutrientes esenciales para tu bienestar diario.</p>
+              <a href="ElRecetario.html" class="card-button">Ver Receta</a>
+            </div>
+          </div>
+          <div class="recipe-card">
+            <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/6ta_bex1br.jpg" alt="Receta 6">
+            <div class="card-content">
+              <h3>Ensalada de Quinua</h3>
+              <span style="display:inline-block;background:#f5e9da;color:#a30015;font-size:0.95em;padding:2px 10px;border-radius:8px;margin-bottom:6px;">Vitamina C</span>
+              <p>Caldo nutritivo con una variedad de vegetales, ideal para fortalecer el sistema inmune.</p>
+              <a href="ElRecetarios.html" class="card-button">Ver Receta</a>
+            </div>
+          </div>
+        </div>
+        <!-- Botón para ver todas las recetas -->
+        <div class="discover-recipes-button-container">
+          <a href="ElRecetario.html" class="discover-recipes-button">Descubrir Todas las Recetas</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== SEPARADOR SVG =================== -->
+    <svg class="svg-separator" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="var(--beige)" d="M0,0 C480,60 960,0 1440,60 L1440,60 L0,60 Z"></path>
+    </svg>
+
+    <!-- =================== SECCIÓN GALLETA SALUDABLE =================== -->
+    <section class="healthy-cookie-section">
+      <div class="container">
+        <div class="cookie-content">
+          <!-- Texto de la galleta saludable -->
+          <div class="cookie-text">
+            <h3>¡El Snack Perfecto y Nutritivo!</h3>
+            <p>Descubre nuestra deliciosa galleta saludable, elaborada con ingredientes naturales y pensada para darte energía sin remordimientos.</p>
+            <ul>
+              <li>Elaborada con avena integral.</li>
+              <li>Endulzada naturalmente con frutas.</li>
+              <li>Fuente de fibra y nutrientes esenciales.</li>
+              <li>Ideal para llevar contigo a donde vayas.</li>
+            </ul>
+          </div>
+          <!-- Imagen de la galleta -->
+          <div class="cookie-image">
+            <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752971518/sisisisisi_urp7ce.jpg" alt="Galleta Saludable">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== SEPARADOR SVG =================== -->
+    <svg class="svg-separator" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="var(--blanco)" d="M0,60 C480,0 960,60 1440,0 L1440,60 L0,60 Z"></path>
+    </svg>
+
+    <!-- =================== SECCIÓN TESTIMONIOS =================== -->
+    <section id="testimonios" class="testimonios-section" style="background: var(--beige); padding: 80px 0 60px 0; text-align: center;">
+      <div class="container">
+        <h2 class="section-title" style="color: var(--rojo-principal);">TESTIMONIOS</h2>
+        <div class="testimonios-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 36px; margin-top: 36px;">
+          <!-- Ejemplo de tarjetas de testimonios -->
+          <div class="testimonio-card" style="background: var(--blanco); border-radius: 18px; box-shadow: var(--shadow); padding: 32px 24px; max-width: 340px; min-width: 260px; text-align: left; border: 1px solid var(--beige);">
+            <div style="font-size:2.2em; color:var(--rojo-principal); margin-bottom:10px;">“</div>
+            <p style="font-size:1.08em; color:var(--gris-oscuro); margin-bottom:18px;">Gracias a Fuerza Roja aprendí a alimentarme mejor y mis niveles de hemoglobina mejoraron mucho. ¡Recomiendo la calculadora y las recetas!</p>
+            <div style="font-weight:700; color:var(--rojo-principal);">María López</div>
+            <div style="font-size:0.95em; color:var(--gris-oscuro);">Lima, Perú</div>
+          </div>
+          <!-- ...más testimonios aquí... -->
+           <div class="testimonio-card" style="background: var(--blanco); border-radius: 18px; box-shadow: var(--shadow); padding: 32px 24px; max-width: 340px; min-width: 260px; text-align: left; border: 1px solid var(--beige);">
+            <div style="font-size:2.2em; color:var(--rojo-principal); margin-bottom:10px;">“</div>
+            <p style="font-size:1.08em; color:var(--gris-oscuro); margin-bottom:18px;">Las recetas son fáciles y deliciosas. Ahora me siento con más energía y confianza en mi salud.</p>
+            <div style="font-weight:700; color:var(--rojo-principal);">Carlos Fernández</div>
+            <div style="font-size:0.95em; color:var(--gris-oscuro);">Arequipa, Perú</div>
+          </div>
+          <div class="testimonio-card" style="background: var(--blanco); border-radius: 18px; box-shadow: var(--shadow); padding: 32px 24px; max-width: 340px; min-width: 260px; text-align: left; border: 1px solid var(--beige);">
+            <div style="font-size:2.2em; color:var(--rojo-principal); margin-bottom:10px;">“</div>
+            <p style="font-size:1.08em; color:var(--gris-oscuro); margin-bottom:18px;">Me gustó mucho la información y el acompañamiento de la página. Es clara, útil y motivadora.</p>
+            <div style="font-weight:700; color:var(--rojo-principal);">Ana Torres</div>
+            <div style="font-size:0.95em; color:var(--gris-oscuro);">Cusco, Perú</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== SECCIÓN EQUIPO =================== -->
+    <section class="team-section">
+      <div class="container">
+        <h2 class="section-title">NUESTRO EQUIPO</h2>
+        <div class="team-grid">
+          <!-- Cada .team-member es un integrante del equipo -->
+          <div class="team-member">
+            <div class="member-photo-wrapper">
+              <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753044616/keye_rr5v8d.jpg" alt="Keyla" class="member-photo">
+            </div>
+            <h3>KEYLA</h3>
+            <p class="member-role">Fundador</p>
+            <div class="social-links">
+              <a href="https://www.instagram.com/invites/contact/?igsh=1huohgnxr3542&utm_content=rnubbx2" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="https://www.facebook.com/share/14GYzrENZyC/" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="member-photo-wrapper">
+              <img src="abal.jpg" alt="Abal" class="member-photo">
+            </div>
+            <h3>ABAL</h3>
+            <p class="member-role">Marketing</p>
+            <div class="social-links">
+              <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="member-photo-wrapper">
+              <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753048530/errrrrrrr_t7cxb8.png" alt="Daniella" class="member-photo">
+            </div>
+            <h3>DANIELLA</h3>
+            <p class="member-role">Diseñador</p>
+            <div class="social-links">
+              <a href="https://www.instagram.com/danii_cosmec" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="https://www.facebook.com/dvniiilv7" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="member-photo-wrapper">
+              <img src="https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753044616/ari_ay77r4.jpg" alt="Ariana" class="member-photo">
+            </div>
+            <h3>ARIANA</h3>
+            <p class="member-role">Desarrollador</p>
+            <div class="social-links">
+              <a href="https://www.instagram.com/myari_x?igsh=N3RwOHRtNTMxNGFs" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="https://www.facebook.com/share/1ED4LRxEyc/" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="arianaximenasolorzanochavez@gmail.com" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =================== FOOTER =================== -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Fuerza Roja. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>

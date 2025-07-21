@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Recetario | Fuerza Roja</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilorecetas.css">
+</head>
+<body>
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar fixed-top">
+    <div class="container">
+      <div class="logo" style="display: flex; align-items: center; gap: 18px;">
+        <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/w_400,h_300,c_fill/v1752963070/444_iiaa4n.png" alt="Fuerza Roja">
+        <button id="yo-btn" class="yo-btn" aria-label="Ver perfil" tabindex="0">
+          <i class="fas fa-user-circle"></i> <span class="yo-label">YO</span>
+        </button>
+      </div>
+      <div class="menu-toggle" id="menu-toggle" aria-label="Abrir menú" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <nav>
+        <ul id="main-menu">
+          <li><a href="inicio.html">INICIO</a></li>
+          <li><a href="recetas.html">RECETAS</a></li>
+          <li><a href="planificador.html">PLANIFICADOR</a></li>
+          <li><a href="historias.html">HISTORIAS</a></li>
+          <li><a href="ubicacion.html">UBICACIÓN</a></li>
+          <li><a href="#" class="button">TESTIMONIOS</a></li>
+        </ul>
+      </nav>
+      <!-- Panel YO -->
+      <div id="yo-panel" class="yo-panel">
+  <button class="yo-close" id="yo-close" aria-label="Cerrar">&times;</button>
+  <div class="yo-content">
+    <h3>Bienvenido a Fuerza Roja, <span id="yo-nombre"></span></h3>
+    <p><strong>Nombre:</strong> <span id="yo-nombre2"></span></p>
+    <p><strong>Correo:</strong> <span id="yo-correo"></span></p>
+  </div>
+</div>
+  </header>
+
+  <!-- ========== SCRIPTS DE FUNCIONALIDAD ========== -->
+  <script>
+    // Mostrar datos del usuario desde localStorage en el panel YO
+    
+  document.getElementById('yo-nombre').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-nombre2').textContent = localStorage.fuerzaRojaNombre || "";
+  document.getElementById('yo-correo').textContent = localStorage.fuerzaRojaCorreo || "";
+
+    // Responsive navbar toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainMenu = document.getElementById('main-menu');
+    menuToggle.addEventListener('click', () => {
+      mainMenu.classList.toggle('open');
+    });
+    menuToggle.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        mainMenu.classList.toggle('open');
+      }
+    });
+    // Cerrar menú al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!menuToggle.contains(e.target) && !mainMenu.contains(e.target)) {
+        mainMenu.classList.remove('open');
+      }
+    });
+    // YO panel toggle
+    const yoBtn = document.getElementById('yo-btn');
+    const yoPanel = document.getElementById('yo-panel');
+    const yoClose = document.getElementById('yo-close');
+    yoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      yoPanel.classList.toggle('active');
+    });
+    yoBtn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        yoPanel.classList.toggle('active');
+      }
+    });
+    yoClose.addEventListener('click', () => {
+      yoPanel.classList.remove('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!yoPanel.contains(e.target) && !yoBtn.contains(e.target)) {
+        yoPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <!-- ========== CONTENIDO PRINCIPAL ========== -->
+  <main class="recetario-section">
+    <div class="container">
+      <div class="seccion-filtros">
+        <h1>Filtrar Recetas</h1>
+        <h2>Filtrar por Tipo de Comida:</h2>
+        <button data-tipo-filtro="tipo" data-valor-filtro="Desayuno">Desayuno</button>
+        <button data-tipo-filtro="tipo" data-valor-filtro="Almuerzo">Almuerzo</button>
+        <button data-tipo-filtro="tipo" data-valor-filtro="Cena">Cena</button>
+        <h2>Filtrar por Tipo de Nutrientes:</h2>
+        <button data-tipo-filtro="nutrientes" data-valor-filtro="Hierro Hemo">Hierro Hemo</button>
+        <button data-tipo-filtro="nutrientes" data-valor-filtro="Hierro No Hemo">Hierro No Hemo</button>
+        <button data-tipo-filtro="nutrientes" data-valor-filtro="Vitamina C">Vitamina C</button>
+        <hr>
+        <button id="filtrar" onclick="aplicarFiltros()">Aplicar Filtros</button>
+        <hr>
+      </div>
+      <div id="resultados"></div>
+      <div class="modal" id="modal" style="display:none;">
+        <div class="modal-content">
+          <span class="close-button" onclick="cerrarModal()">&times;</span>
+          <div id="preparacion-content"></div>
+          <div id="infoNutri-content"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Fuerza Roja. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- ========== SCRIPTS DEL RECETARIO ========== -->
+  <script>
+   
+// ...
+// Aquí va el mismo JS de tu recetario original para filtros, tarjetas y modal
+const recetas = {
+    Receta1: {
+        nombre: 'Lentejas Estofadas con Verduras y Arroz Integral',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de lentejas pardinas (secas)<br>-4 tazas de caldo de verduras o agua (o caldo de pollo para opción no vegetariana)<br>-1 cebolla mediana, picada finamente<br>-2 zanahorias medianas, picadas en cubos<br>-1 pimiento rojo, picado en cubos<br>-2 dientes de ajo, picados<br>-1 lata (400g) de tomate triturado o 2 tomates maduros rallados<br>-1 hoja de laurel<br>-1/2 taza de espinacas frescas, picadas (opcional, para añadir al final)<br>-2 cucharadas de aceite de oliva virgen extra<br>-Sal y pimienta al gusto<br>-Arroz integral cocido para acompañar<br>-Jugo de medio limón (para servir)',
+        preparacion: '-Preparar las Lentejas: Lava las lentejas bajo el grifo. No es necesario remojarlas si son pardinas, pero puedes hacerlo por 30 minutos si quieres reducir el tiempo de cocción. <br> -Sofrito: En una olla grande a fuego medio, calienta el aceite de oliva. Añade la cebolla y sofríe hasta que esté transparente (unos 5 minutos). <br>-Aromáticos y Verduras: Agrega el ajo picado, las zanahorias y el pimiento rojo. Cocina por unos 8-10 minutos, revolviendo ocasionalmente, hasta que las verduras comiencen a ablandarse. <br>-Lentejas y Líquido: Incorpora las lentejas lavadas, el tomate triturado y la hoja de laurel. Vierte el caldo de verduras (o agua). Lleva a ebullición. <br>-Cocción: Reduce el fuego a bajo, tapa la olla y cocina a fuego lento durante 30-40 minutos, o hasta que las lentejas estén tiernas. Si es necesario, añade más líquido durante la cocción. <br>-Toque Final: Retira la hoja de laurel. Si usas espinacas, añádelas en los últimos 5 minutos de cocción hasta que se marchiten. Sazona con sal y pimienta al gusto. <br>-Servir: Sirve las lentejas estofadas calientes, acompañadas de arroz integral.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/1er_ochuvq.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 4-5 mg (lentejas, espinacas).<br>-Vitamina C: Aproximadamente 30-40 mg (pimiento, tomate).<br>-Ácido Fólico: Alto contenido.<br>-Calorías: 350-400 kcal<br>-Proteínas: 18-20g<br>-Grasas: 8-10g<br>-Carbohidratos: 50-60g'
+    },
+    Receta2: {
+        nombre: 'Salmón al Horno con Brócoli y Quinoa',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo'],
+        ingredientes: '-2 filetes de salmón (aprox. 150-180g cada uno)<br>-2 tazas de floretes de brócoli<br>-1 taza de quinoa (seca)<br>-2 tazas de agua o caldo de verduras (para la quinoa)<br>-2 cucharadas de aceite de oliva virgen extra<br>-Jugo de 1/2 limón<br>2 dientes de ajo, picados finamente<br>Sal y pimienta negra al gusto<br>-Opcional: Paprika, eneldo fresco picado',
+        preparacion: '-Precalentar Horno: Precalienta el horno a 200°C (400°F) <br> Preparar Quinoa: En una olla pequeña, combina la quinoa lavada con las 2 tazas de agua o caldo. Lleva a ebullición, luego reduce el fuego a bajo, tapa y cocina por 15 minutos o hasta que el líquido se absorba y la quinoa esté tierna y esponjosa. Retira del fuego y deja reposar tapada por 5 minutos. <br> -Preparar Brócoli: En un tazón grande, mezcla los floretes de brócoli con 1 cucharada de aceite de oliva, sal y pimienta. Extiéndelos en una bandeja para hornear. <br>-Preparar Salmón: Seca los filetes de salmón con papel de cocina. Colócalos en la misma bandeja de hornear junto al brócoli. Rocía los filetes con la cucharada restante de aceite de oliva, el jugo de limón, el ajo picado, sal, pimienta y paprika (si usas). <br>-Hornear: Hornea durante 15-20 minutos, o hasta que el salmón esté cocido a tu gusto y el brócoli esté tierno y ligeramente dorado. El tiempo exacto dependerá del grosor de los filetes de salmón. <br>-Servir: Sirve el salmón y el brócoli acompañados de la quinoa cocida. Espolvorea con eneldo fresco si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019662/2da_t79tu9.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1-2 mg (salmón).<br>-Vitamina B12: Muy alto contenido (salmón).<br>-Vitamina C: Aproximadamente 90-100 mg (brócoli).<br>-Calorías: 450-500 kcal<br>-Proteínas: 35-40g<br>-Grasas: 20-25g<br>-Carbohidratos: 30-35g',
+    },
+    Receta3: {
+        nombre: 'Batido Verde "Energía de Hierro"',
+        tipo: ['Desayuno', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'vitamina C'],
+        ingredientes: '-1 taza de espinacas frescas (bien compactadas)<br>-1 naranja grande, pelada y sin semillas<br>-1 kiwi, pelado<br>-1/2 plátano (opcional, para dulzor y cremosidad)<br>-1/2 taza de agua o bebida vegetal (almendra, avena, etc.)<br>-Opcional: 1 cucharadita de semillas de chía o lino (para fibra y Omega-3)',
+        preparacion: '-Preparar Ingredientes: Lava bien las espinacas. Pela la naranja y el kiwi. <br>-Licuar: Coloca todos los ingredientes en una licuadora: espinacas, trozos de naranja, kiwi, plátano (si usas) y el agua o bebida vegetal. <br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave y homogénea. Si queda muy espeso, añade un poco más de líquido hasta alcanzar la consistencia deseada. <br>-Servir: Sirve inmediatamente para aprovechar al máximo los nutrientes.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/3era_m6pyya.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas).<br>-Vitamina C: Muy alto contenido (naranja, kiwi) - más de 100 mg.<br>-Ácido Fólico: Alto contenido (espinacas).<br>-Calorías: 150-200 kcal<br>-Proteínas: 3-5g<br>Grasas: 1-2g<br>-Carbohidratos: 35-45g',
+    },
+    Receta4: {
+        nombre: 'Pollo con Espinacas y Garbanzos al Curry',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 pechugas de pollo sin piel ni hueso, cortadas en cubos<br>-1 lata (400g) de garbanzos cocidos y escurridos<br>-2 tazas de espinacas frescas<br>-1 cebolla mediana, picada<br>-2 dientes de ajo, picados<br>-1 trozo pequeño de jengibre fresco, rallado (1 cucharadita)<br>-1 lata (400g) de tomate triturado<br>-1/2 taza de caldo de pollo bajo en sodio<br>-1 cucharada de pasta de curry rojo o 2 cucharaditas de curry en polvo<br>1 cucharada de aceite de coco o aceite de oliva<br>-Sal y pimienta al gusto<br>-Arroz basmati integral o quinoa para acompañar<br>-Cilantro fresco picado para decorar (opcional)',
+        preparacion: '-Sofrito Aromático: En una sartén grande o wok a fuego medio, calienta el aceite. Agrega la cebolla y cocina hasta que esté transparente (5 minutos). Añade el ajo, el jengibre y el curry en polvo/pasta, y cocina por 1 minuto más hasta que esté fragante.<br>-Dorar Pollo: Incorpora los cubos de pollo y dóralos por todos los lados.<br>-Añadir Líquidos: Vierte el tomate triturado y el caldo de pollo. Lleva a ebullición, luego reduce el fuego, tapa y cocina a fuego lento por 15-20 minutos, o hasta que el pollo esté cocido.<br>-Garbanzos y Espinacas: Añade los garbanzos escurridos y las espinacas frescas. Cocina por 5-7 minutos más, o hasta que las espinacas se hayan marchitado y los garbanzos estén calientes.<br>-Servir: Sazona con sal y pimienta. Sirve caliente acompañado de arroz basmati integral o quinoa. Decora con cilantro si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/4ta_qt3dxu.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1.5-2.5 mg (pollo).<br>-Hierro no hemo: Aproximadamente 2-3 mg (garbanzos, espinacas).<br>-Vitamina C: Aproximadamente 25-35 mg (tomate, espinacas).<br>-Calorías: 400-450 kcal<br>-Proteínas: 35-40g<br>-Grasas: 10-15g<br>-Carbohidratos: 40-50g',
+    },
+    Receta5: {
+        nombre: 'Tortilla de Espinacas y Champiñones con Pan Integral',
+        tipo: ['Desayuno', 'Cena'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-2 huevos grandes<br>-1 taza de espinacas frescas, picadas<br>-1/2 taza de champiñones laminados<br>-1/4 cebolla pequeña, finamente picada (opcional)<br>-1 cucharadita de aceite de oliva<br>-Sal y pimienta al gusto<br>-1 rebanada de pan integral tostado<br>-Opcional: un chorrito de jugo de limón para acompañar el pan.',
+        preparacion: '-Saltear Verduras: En una sartén pequeña antiadherente a fuego medio, calienta el aceite. Añade la cebolla (si usas) y sofríe por 2 minutos. Agrega los champiñones y cocina hasta que suelten su líquido y se doren ligeramente (5-7 minutos). Añade las espinacas y cocina hasta que se marchiten (1-2 minutos). Retira las verduras de la sartén y resérvalas. <br> -Batir Huevos: En un bol, bate los huevos con sal y pimienta. <br>-Hacer la Tortilla: Vuelve a calentar la sartén a fuego medio-bajo con un poco más de aceite si es necesario. Vierte los huevos batidos. Cuando los bordes empiecen a cuajar, distribuye las verduras salteadas sobre la mitad de la tortilla. <br>-Doblar y Cocinar: Cuando la tortilla esté casi cuajada, dóblala por la mitad con una espátula. Cocina por un minuto más por cada lado hasta que esté dorada y cocida a tu gusto. <br>-Servir: Sirve la tortilla caliente acompañada de pan integral tostado.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/5ta_yadnnp.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas).<br>-Vitamina B12: Muy alto contenido (huevos).<br>-Ácido Fólico: Alto contenido (espinacas).<br>-Calorías: 250-300 kcal<br>-Proteínas: 15-20g<br>-Grasas: 15-20g<br>-Carbohidratos: 15-20g',
+    },
+    Receta6: {
+        nombre: 'Ensalada de Quinoa con Remolacha, Naranja y Semillas de Calabaza',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro No Hemo', 'vitamina C'],
+        ingredientes: '-1 taza de quinoa cocida<br>-2 remolachas medianas, cocidas, peladas y cortadas en cubos<br>-1 naranja, pelada y cortada en gajos o cubos pequeños<br>-1/4 taza de semillas de calabaza tostadas<br>-2 cucharadas de perejil fresco picado<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre balsámico o vinagre de sidra de manzana, sal y pimienta al gusto.',
+        preparacion: '-Cocinar Quinoa: Cocina la quinoa según las instrucciones del paquete (generalmente 1 taza de quinoa por 2 tazas de agua/caldo, hervir, reducir fuego y cocinar por 15 minutos). Deja enfriar. <br>-Preparar Remolacha: Si usas remolachas crudas, hierve o ásalas hasta que estén tiernas, luego pela y corta en cubos. Si usas precocidas, simplemente córtalas. <br>-Combinar Ingredientes: En un bol grande, combina la quinoa cocida y enfriada, los cubos de remolacha, los gajos de naranja y el perejil picado.<br>-Preparar Aderezo: En un bol pequeño, mezcla el aceite de oliva, el vinagre, la sal y la pimienta. <br>-Aderezar y Servir: Vierte el aderezo sobre la ensalada y mezcla suavemente para combinar. Espolvorea con las semillas de calabaza tostadas antes de servir.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753019661/6ta_bex1br.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (quinoa, remolacha, semillas de calabaza).<br>-Vitamina C: Aproximadamente 50-60 mg (naranja).<br>-Calorías: 300-350 kcal<br>-Proteínas: 10-12g<br>-Grasas: 15-20g<br>-Carbohidratos: 35-40g',
+    },
+    Receta7: {
+        nombre: 'Tostadas de Aguacate con Huevo Duro y Semillas de Sésamo', /*empezamos desde aqui :ccc*/
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-2 rebanadas de pan integral tostado<br>-1 aguacate maduro, hecho puré o laminado<br>-2 huevos duros, cortados en rodajas<br>-1 cucharada de semillas de sésamo (ajonjolí)<br>-Sal, pimienta negra y hojuelas de chile (opcional) al gusto<br>-Jugo de 1/4 limón (opcional)',
+        preparacion: '-Tostar Pan: Tuesta el pan integral hasta que esté dorado y crujiente.<br>-Preparar Aguacate: En un bol pequeño, haz puré el aguacate con un tenedor. Sazona con sal, pimienta y un chorrito de limón si lo deseas. Si prefieres, córtalo en láminas finas.<br>-Montar Tostadas: Unta o coloca el aguacate sobre las tostadas.<br>-Añadir Huevo: Coloca las rodajas de huevo duro sobre el aguacate.<br>-Finalizar: Espolvorea generosamente con semillas de sésamo. Añade hojuelas de chile si te gusta un toque picante.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022328/170713-5d8c7f65e71ad2d5abd1ada19104c5ce_huevo-duro-con-tostadas_mqqxgw.avif', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (aguacate, semillas de sésamo).<br>-Vitamina B12: Alto contenido (huevos).<br>-Calorías: 350-400 kcal<br>-Proteínas: 15-20g<br>-Grasas: 20-25g<br>-Carbohidratos: 25-30g',
+    },
+    Receta8: {
+        nombre: 'Guiso de Carne de Res con Patatas y Guisantes',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-500g de carne de res para guisar (aguja, morcillo), cortada en cubos de 2-3 cm<br>-2 cucharadas de aceite de oliva<br>1 cebolla grande, picada<br>-2 zanahorias grandes, peladas y cortadas en rodajas gruesas<br>-2 patatas medianas, peladas y cortadas en cubos grandes<br>-2 dientes de ajo, picados<br>-1 lata (400g) de tomate triturado o 2 tomates maduros rallados<br>-4 tazas de caldo de res bajo en sodio<br>-1 taza de guisantes congelados<br>-1 hoja de laurel<br>-1 cucharadita de tomillo seco<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar',
+        preparacion: '-Dorar la Carne: En una olla grande de fondo grueso o una olla holandesa, calienta el aceite a fuego medio-alto. Sazona la carne con sal y pimienta y dórala en tandas hasta que esté bien sellada por todos los lados. Retira la carne y reserva.<br>-Sofrito: Reduce el fuego a medio y añade la cebolla a la olla. Sofríe hasta que esté transparente (5-7 minutos). Agrega el ajo y cocina por 1 minuto más hasta que esté fragante.<br>-Añadir Vegetales y Líquido: Incorpora las zanahorias, las patatas, el tomate triturado, la hoja de laurel y el tomillo. Regresa la carne a la olla. Vierte el caldo de res.<br>-Cocción Lenta: Lleva a ebullición, luego reduce el fuego a bajo, tapa y cocina a fuego lento durante 1.5 a 2 horas, o hasta que la carne esté muy tierna. Revuelve ocasionalmente.<br>-Añadir Guisantes: En los últimos 10 minutos de cocción, añade los guisantes congelados y cocina hasta que estén tiernos.<br>-Servir: Retira la hoja de laurel. Sazona con sal y pimienta al gusto. Sirve caliente, decorado con perejil fresco.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022328/rec2_ak9wis.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 4-6 mg (carne de res).<br>-Vitamina B12: Muy alto contenido (carne de res).<br>-Vitamina C: Aproximadamente 20-30 mg (guisantes, patata, tomate).<br>-Calorías: 500-600 kcal<br>-Proteínas: 40-50g<br>-Grasas: 20-30g<br>-Carbohidratos: 30-40g',
+    },
+    Receta9: {
+        nombre: 'Bowl de Smoothie de Frutos Rojos y Espinacas con Granola',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de frutos rojos congelados (fresas, frambuesas, arándanos)<br>-1 taza de espinacas frescas<br>-1/2 plátano congelado (opcional, para cremosidad y dulzor)<br>-1/2 taza de bebida vegetal (almendra, avena, soja) o agua<br>-Para decorar: 1/4 taza de granola con frutos secos, algunas bayas frescas, semillas de chía.',
+        preparacion: '-Licuar Base: En una licuadora de alta potencia, combina los frutos rojos congelados, las espinacas, el plátano (si usas) y la bebida vegetal/agua.<br>-Mezclar: Licúa hasta obtener una consistencia espesa y cremosa, similar a un helado suave. Si es necesario, añade un poco más de líquido, una cucharada a la vez.<br>-Servir: Vierte el smoothie en un bol.<br>-Decorar: Decora con la granola, algunas bayas frescas y las semillas de chía.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec9_fzsob4.avif',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (espinacas, granola).<br>-Vitamina C: Muy alto contenido (frutos rojos) - más de 100 mg.<br>-Ácido Fólico: Alto contenido (espinacas).<br>-Calorías: 250-300 kcal<br>-Proteínas: 5-8g<br>-Grasas: 5-10g<br>-Carbohidratos: 40-50g', 
+    },
+    Receta10: {
+        nombre: 'Salteado de Tofu y Verduras con Salsa de Sésamo y Soja',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-250g de tofu firme, prensado y cortado en cubos<br>-1 cucharada de maicena (fécula de maíz)<br>-1 cucharada de aceite de sésamo<br>-1 cabeza de brócoli, cortada en floretes<br>-1 pimiento rojo, cortado en tiras<br>-1 zanahoria grande, cortada en juliana o rodajas finas<br>-2 dientes de ajo, picados<br>-1 cucharadita de jengibre fresco, rallado<br>Para la salsa: 3 cucharadas de salsa de soja baja en sodio (o tamari), 1 cucharada de vinagre de arroz, 1 cucharadita de miel o sirope de arce, 1 cucharadita de aceite de sésamo, 1/2 cucharadita de semillas de sésamo.<br>Arroz integral o fideos de arroz para acompañar.',
+        preparacion: '-Preparar Tofu: Corta el tofu prensado en cubos y sécalos bien con papel de cocina. En un bol, espolvorea el tofu con la maicena y mezcla suavemente para cubrir.<br>-Cocinar Tofu: Calienta 1 cucharada de aceite de sésamo en un wok o sartén grande a fuego medio-alto. Agrega el tofu y dóralo por todos los lados hasta que esté crujiente y dorado. Retira el tofu y reserva.<br>-Saltear Verduras: Añade un poco más de aceite si es necesario. Agrega el brócoli, el pimiento rojo y la zanahoria. Saltea por 5-7 minutos hasta que las verduras estén tiernas pero aún crujientes.<br>Añadir Aromáticos: Agrega el ajo y el jengibre al wok y saltea por 1 minuto hasta que estén fragantes.<br>-Preparar Salsa: Mientras tanto, en un bol pequeño, mezcla todos los ingredientes de la salsa hasta que estén bien combinados.<br>-Combinar: Regresa el tofu al wok con las verduras. Vierte la salsa sobre la mezcla y revuelve para cubrir todo. Cocina por 1-2 minutos hasta que la salsa espese ligeramente.<br>-Servir: Sirve caliente con arroz integral o fideos de arroz.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec10_rpbql8.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (tofu, brócoli).<br>-Vitamina C: Aproximadamente 60-80 mg (brócoli, pimiento rojo).<br>-Calorías: 400-450 kcal<br>-Proteínas: 20-25g<br>-Grasas: 20-25g<br>-Carbohidratos: 30-35g'
+    },
+    Receta11: {
+        nombre: 'Bowl de Avena con Frutos Secos y Semillas de Lino',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1/2 taza de hojuelas de avena<br>-1 taza de agua o bebida vegetal<br>-1/4 taza de frutos secos picados (almendras, nueces, anacardos)<br>-1 cucharada de semillas de lino molidas<br>-1/2 cucharadita de canela en polvo<br>Opcional: miel o sirope de arce al gusto, fruta fresca (plátano en rodajas, bayas) para decorar.',
+        preparacion: '-Cocinar Avena: En una olla pequeña, combina la avena y el agua/bebida vegetal. Lleva a ebullición a fuego medio.<br>-Cocción Lenta: Reduce el fuego a bajo y cocina a fuego lento, revolviendo ocasionalmente, durante 5-7 minutos, o hasta que la avena haya absorbido el líquido y tenga la consistencia deseada.<br>Mezclar y Servir: Retira del fuego. Incorpora los frutos secos picados, las semillas de lino molidas y la canela. Si deseas, añade un poco de miel o sirope.<br>Decorar: Sirve en un bol y decora con fruta fresca si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec11_hv7wwz.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-3 mg (avena, frutos secos, semillas de lino).<br>-Ácido Fólico: Alto contenido (avena).<br>-Calorías: 300-400 kcal<br>-Proteínas: 10-15g<br>-Grasas: 15-20g<br>-Carbohidratos: 40-50g'
+    },
+    Receta12: {
+        nombre: 'Hamburguesas de Lentejas y Zanahoria con Pan Integral',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de lentejas cocidas (aprox. 1/2 taza secas)<br>-1 zanahoria mediana, rallada <br>-1/2 cebolla pequeña, finamente picada<br>-2 cucharadas de pan rallado (o avena molida sin gluten)<br>-1 cucharadita de comino molido<br>-1/2 cucharadita de pimentón dulce<br>-Sal y pimienta al gusto<br>-2 cucharadas de aceite de oliva<br>-Pan integral de hamburguesa, lechuga, tomate, cebolla roja, pepinillos, kétchup (sin azúcar añadido) para servir.',
+        preparacion: '-Preparar Lentejas: Si usas lentejas secas, cocínalas hasta que estén tiernas y escurre bien. Si usas enlatadas, enjuaga y escurre.<br>-Formar Masa: En un bol grande, machaca las lentejas cocidas con un tenedor (deja algunos trozos para textura). Añade la zanahoria rallada, la cebolla picada, el pan rallado, el comino, el pimentón, sal y pimienta. Mezcla bien hasta que se combine y puedas formar las hamburguesas. Si la mezcla está muy húmeda, añade un poco más de pan rallado.<br>Formar y Cocinar: Forma 4 hamburguesas. Calienta el aceite de oliva en una sartén grande a fuego medio. Cocina las hamburguesas por 5-7 minutos por cada lado, o hasta que estén doradas y crujientes por fuera.<br>-Montar: Sirve las hamburguesas en panes integrales con tus aderezos favoritos (lechuga, tomate, cebolla, pepinillos y kétchup).',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec12_xnbccz.avif',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (lentejas).<br>-Vitamina C: Aproximadamente 15-25 mg (zanahoria, tomate/kétchup).<br>-Calorías: 350-400 kcal (sin considerar el pan y aderezos extra)<br>-Proteínas: 15-20g<br>-Grasas: 10-15g<br>-Carbohidratos: 40-50g',
+    },
+    Receta13: {
+        nombre: 'Ensalada de Hígado de Pollo con Cebolla Caramelizada y Rúcula',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo'],
+        ingredientes: '-250g de hígado de pollo, limpio y cortado en trozos medianos<br>-1 cebolla grande, cortada en juliana fina<br>-2 cucharadas de aceite de oliva virgen extra<br>-1 cucharada de vinagre balsámico<br>-1 cucharadita de azúcar moreno (opcional, para la cebolla) <br>-2 tazas de rúcula fresca<br>-Sal y pimienta negra al gusto<br>-Opcional: tostadas de pan integral para acompañar.',
+        preparacion: '-Caramelizar Cebolla: En una sartén a fuego medio-bajo, calienta 1 cucharada de aceite de oliva. Añade la cebolla y cocina lentamente, revolviendo ocasionalmente, durante 15-20 minutos, hasta que esté muy tierna y caramelizada. Si lo deseas, añade el azúcar moreno en los últimos 5 minutos. Retira la cebolla y reserva.<br>-Cocinar Hígado: En la misma sartén, añade la cucharada restante de aceite y sube el fuego a medio-alto. Agrega el hígado de pollo y cocina por 3-5 minutos por cada lado, o hasta que esté cocido por fuera pero ligeramente rosado por dentro (o a tu gusto). No lo cocines demasiado para evitar que quede duro. Sazona con sal y pimienta.<br>Montar la Ensalada: En un bol, coloca la rúcula fresca. Distribuye el hígado de pollo cocido y la cebolla caramelizada sobre la rúcula.<br>-Aderezar: Rocía con vinagre balsámico y un poco más de pimienta. Sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec13_moh1gs.webp', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Muy alto contenido (hígado de pollo) - más de 10 mg.<br>-Vitamina B12: Muy alto contenido (hígado de pollo).<br>-Ácido Fólico: Alto contenido (rúcula).<br>-Calorías: 300-350 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g <br>-Carbohidratos: 10-15g',
+    },
+    Receta14: {
+        nombre: 'Sopa de Verduras y Carne con Fideos Integrales',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-200g de carne de res magra (por ejemplo, falda), cortada en cubos pequeños<br> -1 cucharada de aceite de oliva<br>-1 cebolla mediana, picada<br>2 zanahorias, picadas en rodajas<br>-2 tallos de apio, picados<br>-1 calabacín pequeño, picado en cubos <br>-1 tomate, picado<br>-6 tazas de caldo de res bajo en sodio<br>1/2 taza de fideos integrales pequeños (estrellitas, letras)<br>-Sal y pimienta al gusto<br>Perejil fresco picado para decorar',
+        preparacion: '-Dorar Carne: En una olla grande, calienta el aceite a fuego medio-alto. Agrega la carne y dórala por todos lados hasta que esté sellada. Retira la carne y reserva.<br>-Sofrito: Reduce el fuego a medio. Añade la cebolla, zanahorias y apio a la olla. Sofríe por 5-7 minutos hasta que estén tiernas.<br>-Añadir Líquidos y Carne: Regresa la carne a la olla. Agrega el calabacín, el tomate y vierte el caldo de res. Lleva a ebullición.<br>Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 30-40 minutos, o hasta que la carne esté tierna.<br>-Añadir Fideos: Incorpora los fideos integrales y cocina según las instrucciones del paquete (normalmente 8-10 minutos), hasta que estén al dente.<br>-Servir: Sazona con sal y pimienta. Sirve caliente, espolvoreado con perejil fresco.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec13_jturbr.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 3-4 mg (carne).<br>-Vitamina C: Aproximadamente 20-30 mg (zanahoria, tomate, calabacín).<br>-Calorías: 350-400 kcal<br>-Proteínas: 25-30g <br>-Grasas: 10-15g <br>-Carbohidratos: 30-35g',
+    },
+    Receta15: {
+        nombre: 'Pudín de Chía con Leche de Almendras y Moras',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-3 cucharadas de semillas de chía<br>1 taza de leche de almendras (sin azúcar)<br>-1/2 cucharadita de extracto de vainilla<br>-1 cucharadita de miel o sirope de arce (opcional)<br>-1/2 taza de moras frescas o congeladas<br>-Opcional: Unas hojas de menta para decorar.',
+        preparacion: '-Mezclar Base: En un frasco o recipiente con tapa, combina las semillas de chía, la leche de almendras, el extracto de vainilla y el endulzante (si usas). Revuelve bien para que no queden grumos.<br>-Refrigerar: Tapa el recipiente y refrigera por al menos 4 horas, o idealmente toda la noche, hasta que las semillas de chía hayan absorbido el líquido y el pudín esté espesso.<br>Servir: Justo antes de servir, revuelve el pudín de chía y cúbrelo con las moras frescas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec15_zpir7b.webp',
+    },
+    Receta16: {
+        nombre: 'Saltado de Hígado con Pimientos y Cebolla',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina A'],
+        ingredientes: '-300g de hígado de res, cortado en tiras finas<br>-1 cucharada de aceite vegetal<br>-1 cebolla roja grande, cortada en juliana gruesa<br>-1 pimiento rojo, cortado en tiras<br>-1 pimiento verde, cortado en tiras<br>-2 dientes de ajo picados<br>-2 cucharadas de salsa de soja<br>-1 cucharadita de vinagre tinto<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar<br>-Arroz blanco o papas cocidas para acompañar',
+        preparacion: '-Prepara el hígado: Sazona el hígado con sal y pimienta.<br>-Sofríe: Calienta el aceite en una sartén grande o wok a fuego alto. Agrega el hígado y cocina rápidamente por 1-2 minutos por cada lado, hasta que esté dorado por fuera pero ligeramente rosado por dentro. Retira el hígado y reserva.<br>-Saltea las verduras: En la misma sartén, agrega la cebolla, los pimientos y el ajo. Saltea por 3-5 minutos hasta que las verduras estén tiernas pero aún crujientes.<br>-Combina: Regresa el hígado a la sartén. Añade la salsa de soja y el vinagre tinto. Mezcla bien y cocina por 1 minuto más.<br>-Sirve: Retira del fuego, decora con perejil fresco y sirve caliente con arroz blanco o papas cocidas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022327/rec16_z8y2ku.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 15-20 mg<br>-Vitamina A: Muy alta (el hígado es una excelente fuente)<br>-Calorías: 350-400 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 10-15g'
+    },
+    Receta17: {
+        nombre: 'Guiso de Sangrecita con Menta y Hierbabuena',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo'],
+        ingredientes: '-500g de sangrecita de pollo o cerdo, cocida y picada finamente<br>-1 cucharada de aceite vegetal<br>-1 cebolla roja pequeña, picada finamente<br>-2 dientes de ajo, picados<br>-1 ají amarillo fresco, sin venas ni semillas, picado (opcional, para un toque picante)<br>-1/2 taza de caldo de pollo o agua<br>-1/4 taza de hierbabuena fresca picada<br>-1/4 taza de menta fresca picada<br>-Sal y pimienta al gusto<br>-Papas doradas o yuca sancochada para acompañar',
+        preparacion: '-Sofríe: Calienta el aceite en una olla a fuego medio. Agrega la cebolla, el ajo y el ají amarillo (si lo usas). Sofríe por 5 minutos hasta que la cebolla esté transparente.<br>-Añade la sangrecita: Incorpora la sangrecita picada y mezcla bien con el sofrito. Cocina por 5 minutos, revolviendo ocasionalmente.<br>-Añade líquido y hierbas: Vierte el caldo o agua, sazona con sal y pimienta. Añade la hierbabuena y la menta. Cocina a fuego lento por 10 minutos para que los sabores se integren.<br>-Sirve: Retira del fuego y sirve caliente, acompañado de papas doradas o yuca sancochada.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022326/rec17_defo5i.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 20-25 mg<br>-Calorías: 300-350 kcal<br>-Proteínas: 25-30g<br>-Grasas: 10-15g<br>-Carbohidratos: 5-10g'
+    },
+    Receta18: {
+        nombre: 'Anticuchos de Corazón de Res con Papa Dorada',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Proteínas'],
+        ingredientes: '-500g de corazón de res, cortado en cubos de 2-3 cm<br>-Para la marinada: 2 cucharadas de ají panca molido, 1 cucharada de ajo molido, 1/4 taza de vinagre tinto, 1/4 taza de cerveza negra (opcional), 1 cucharadita de comino, Sal y pimienta al gusto<br>-Aceite vegetal para pincelar<br>-Palitos de anticucho (remojados en agua si son de madera)<br>-Papas cocidas y doradas para acompañar<br>-Crema de ají (opcional)',
+        preparacion: '-Marina el corazón: En un bol grande, combina todos los ingredientes de la marinada. Agrega los cubos de corazón, mezcla bien y deja marinar en el refrigerador por al menos 2 horas, idealmente toda la noche.<br>-Ensarta: Ensarta 3-4 cubos de corazón en cada palito de anticucho.<br>-Cocina: Calienta una parrilla o sartén a fuego medio-alto. Pincela los anticuchos con un poco de aceite y cocínalos por 3-4 minutos por cada lado, hasta que estén dorados y cocidos al punto deseado.<br>-Sirve: Sirve los anticuchos calientes, acompañados de papas doradas y, si lo deseas, crema de ají.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022325/rec18_w2gwom.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 10-15 mg<br>-Calorías: 400-450 kcal<br>-Proteínas: 35-40g<br>-Grasas: 20-25g<br>-Carbohidratos: 10-15g'
+    },
+    Receta19: {
+        nombre: 'Ensalada de Espinacas Frescas con Lentejas, Naranja y Semillas de Calabaza',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 tazas de espinacas frescas<br>-1/2 taza de lentejas cocidas<br>-1 naranja, pelada y segmentada (o cortada en cubos)<br>-2 cucharadas de semillas de calabaza (pepitas)<br>-1/4 cebolla roja, finamente rebanada<br>-Para el aderezo de cítricos: 2 cucharadas de aceite de oliva extra virgen, 1 cucharada de jugo de limón fresco, 1 cucharadita de mostaza Dijon, Sal y pimienta al gusto',
+        preparacion: '-Prepara la ensalada: En un bol grande, combina las espinacas, las lentejas cocidas, los segmentos de naranja y la cebolla roja rebanada.<br>-Prepara el aderezo: En un bol pequeño, mezcla el aceite de oliva, el jugo de limón, la mostaza Dijon, sal y pimienta hasta emulsionar.<br>-Adereza y sirve: Vierte el aderezo sobre la ensalada y mezcla suavemente para cubrir todos los ingredientes. Espolvorea con las semillas de calabaza antes de servir.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022326/rec19_ii6sab.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg<br>-Vitamina C: Aproximadamente 70-90 mg (naranja)<br>-Calorías: 300-350 kcal<br>-Proteínas: 12-15g<br>-Grasas: 15-20g<br>-Carbohidratos: 30-35g'
+    },
+    Receta20: {
+        nombre: 'Batido Energético de Frutas Rojas, Cacao y Espinaca',
+        tipo: ['Desayuno', 'Merienda'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de frutos rojos congelados (fresas, arándanos, frambuesas)<br>-1/2 plátano congelado (para mayor cremosidad)<br>-1/2 taza de espinacas frescas<br>-1 cucharada de cacao en polvo puro (sin azúcar)<br>-1 cucharada de mantequilla de almendras o cacahuete (opcional, para proteínas y grasas saludables)<br>-1 taza de leche vegetal (almendra, soja) o agua<br>-Opcional: miel o sirope de arce al gusto',
+        preparacion: '-Licúa: Coloca todos los ingredientes en una licuadora.<br>-Mezcla: Licúa hasta obtener una consistencia suave y homogénea. Si está muy espeso, añade un poco más de líquido.<br>-Sirve: Vierte en un vaso y disfruta de inmediato.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022326/rec20_fqrotc.webp', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-3 mg (cacao, espinaca)<br>-Vitamina C: Aproximadamente 80-100 mg (frutos rojos)<br>-Calorías: 250-300 kcal<br>-Proteínas: 8-12g<br>-Grasas: 8-12g<br>-Carbohidratos: 40-50g'
+    },
+    Receta21: {
+        nombre: 'Huevos Revueltos con Espinacas, Tomate y Tostada de Centeno',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 huevos grandes<br>-1 taza de espinacas frescas, picadas<br>-1/2 tomate mediano, picado en cubos<br>-1 cucharadita de aceite de oliva<br>-Sal y pimienta al gusto<br>-1 rebanada de pan de centeno tostado',
+        preparacion: '-Saltear Verduras: En una sartén antiadherente a fuego medio, calienta el aceite. Agrega el tomate picado y cocina por 2-3 minutos. Añade las espinacas y cocina hasta que se marchiten (1-2 minutos). Retira las verduras de la sartén y reserva. <br>-Batir Huevos: En un bol, bate los huevos con sal y pimienta. <br>-Hacer Revueltos: Vuelve a calentar la sartén a fuego medio-bajo con un poco más de aceite si es necesario. Vierte los huevos batidos. Cuando empiecen a cuajar, incorpora las verduras salteadas y revuelve suavemente hasta que los huevos estén cocidos a tu gusto. <br>-Servir: Sirve los huevos revueltos calientes con la tostada de centeno.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022326/rec21_f6yhtt.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-2.5 mg (espinacas, huevos).<br>-Vitamina C: Aproximadamente 15-20 mg (tomate, espinacas).<br>-Calorías: 280-330 kcal<br>-Proteínas: 18-22g<br>-Grasas: 18-22g<br>-Carbohidratos: 15-20g'
+    },
+    Receta22: {
+        nombre: 'Sopa de Lentejas Rojas con Zanahoria y Cúrcuma',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de lentejas rojas (secas)<br>-4 tazas de caldo de verduras<br>-2 zanahorias medianas, picadas en cubos<br>-1 cebolla pequeña, picada finamente<br>-2 dientes de ajo, picados<br>-1 cucharadita de cúrcuma en polvo<br>-1/2 cucharadita de comino molido<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Jugo de medio limón (para servir, opcional)',
+        preparacion: '-Sofrito Aromático: En una olla a fuego medio, calienta el aceite. Añade la cebolla y sofríe hasta que esté transparente. Agrega el ajo, la cúrcuma y el comino, y cocina por 1 minuto hasta que estén fragantes.<br>-Añadir Ingredientes: Incorpora las lentejas rojas lavadas y las zanahorias. Vierte el caldo de verduras. Lleva a ebullición.<br>-Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 20-25 minutos, o hasta que las lentejas estén muy tiernas y la sopa haya espesado. <br>-Servir: Sazona con sal y pimienta. Si lo deseas, exprime un poco de jugo de limón antes de servir para realzar el sabor y mejorar la absorción de hierro.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022326/rec22_nwstmh.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 4-5 mg (lentejas).<br>-Vitamina C: Aproximadamente 20-30 mg (zanahoria, limón).<br>-Calorías: 300-350 kcal<br>-Proteínas: 15-18g<br>-Grasas: 5-8g<br>-Carbohidratos: 45-50g'
+    },
+    Receta23: {
+        nombre: 'Filete de Res a la Plancha con Puré de Brócoli y Patata',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-1 filete de res magro (aprox. 150-180g)<br>-1 taza de floretes de brócoli<br>-1 patata mediana, pelada y troceada<br>-1 cucharada de aceite de oliva virgen extra<br>-Sal y pimienta negra al gusto<br>-Opcional: 1 cucharada de leche o caldo para el puré.',
+        preparacion: '-Cocinar Patata y Brócoli: Hierve o cocina al vapor la patata troceada hasta que esté muy tierna (unos 15-20 minutos). En los últimos 5 minutos, añade los floretes de brócoli para cocinarlos al vapor. <br>-Preparar Puré: Escurre bien la patata y el brócoli. Machaca ambos con un tenedor o prensapatatas hasta obtener un puré rústico. Si lo deseas, añade una cucharada de leche o caldo para una consistencia más suave. Sazona con sal y pimienta.<br>-Cocinar Filete: Calienta la cucharada de aceite de oliva en una sartén a fuego medio-alto. Sazona el filete de res con sal y pimienta. Cocina el filete a la plancha durante 3-5 minutos por cada lado (para término medio), o hasta alcanzar el punto de cocción deseado. <br>-Servir: Sirve el filete de res inmediatamente junto con el puré de brócoli y patata.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753022326/rec23_khxe0x.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 3-4 mg (carne de res).<br>-Vitamina C: Aproximadamente 70-80 mg (brócoli, patata).<br>-Calorías: 450-500 kcal<br>-Proteínas: 35-40g<br>-Grasas: 18-22g<br>-Carbohidratos: 25-30g'
+    },
+    Receta24: {  /*aqui me quedo :ccc*/
+        nombre: 'Bowl de Yogur con Higos Secos, Pistachos y Semillas de Girasol',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1 taza de yogur natural (griego o normal, sin azúcar)<br>-3-4 higos secos, picados<br>-2 cucharadas de pistachos pelados, ligeramente picados<br>-1 cucharada de semillas de girasol<br>-Opcional: Una pizca de canela en polvo.',
+        preparacion: '-Preparar: En un bol, coloca el yogur natural.<br>-Añadir Toppings: Distribuye los higos secos picados, los pistachos y las semillas de girasol sobre el yogur. <br>-Sabor Opcional: Si lo deseas, espolvorea una pizca de canela. <br>-Servir: Disfruta de inmediato.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec24_hkunqj.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (higos secos, pistachos, semillas de girasol).<br>-Calorías: 300-350 kcal<br>-Proteínas: 15-18g<br>-Grasas: 15-20g<br>-Carbohidratos: 30-35g'
+    },
+    Receta25: {
+        nombre: 'Ensalada de Atún, Garbanzos y Maíz con Vinagreta de Limón',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (aprox. 150g) de atún en agua, escurrido<br>-1 lata (400g) de garbanzos cocidos y escurridos<br>-1/2 taza de maíz dulce (fresco, congelado o de lata)<br>-1/2 pimiento rojo, picado en cubos pequeños<br>-1/4 cebolla morada, finamente picada<br>-2 cucharadas de perejil fresco picado<br>-Para la vinagreta: 3 cucharadas de aceite de oliva virgen extra, jugo de 1 limón, sal y pimienta al gusto.',
+        preparacion: '-Preparar Vinagreta: En un bol pequeño, bate el aceite de oliva, el jugo de limón, la sal y la pimienta hasta emulsionar.<br>-Combinar Ingredientes: En un bol grande, combina el atún desmenuzado, los garbanzos, el maíz, el pimiento rojo, la cebolla morada y el perejil. <br>-Aderezar y Servir: Vierte la vinagreta sobre la ensalada y mezcla suavemente para que todos los ingredientes se impregnen. Sirve fresca.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec25_syxfqi.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1-1.5 mg (atún).<br>-Hierro no hemo: Aproximadamente 2-3 mg (garbanzos, maíz).<br>-Vitamina C: Aproximadamente 40-50 mg (pimiento rojo, limón, perejil).<br>-Calorías: 400-450 kcal<br>-Proteínas: 25-30g<br>-Grasas: 20-25g<br>-Carbohidratos: 25-30g'
+    },
+    Receta26: {
+        nombre: 'Minestrone de Verduras con Pasta Integral y Alubias',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 cucharada de aceite de oliva<br>-1 cebolla mediana, picada<br>-2 zanahorias, picadas<br>-2 tallos de apio, picados<br>-2 dientes de ajo, picados<br>-1 lata (400g) de tomate triturado<br>-6 tazas de caldo de verduras bajo en sodio<br>-1 lata (400g) de alubias blancas cocidas, escurridas y enjuagadas<br>-1/2 taza de pasta integral pequeña (coditos, estrellitas)<br>-1 taza de espinacas frescas<br>-1 cucharadita de orégano seco<br>-Sal y pimienta al gusto<br>-Opcional: Queso parmesano rallado para servir.',
+        preparacion: '-Sofrito: En una olla grande a fuego medio, calienta el aceite. Añade la cebolla, zanahorias y apio. Cocina por 5-7 minutos hasta que estén tiernas. Agrega el ajo y cocina por 1 minuto más.<br>-Añadir Líquidos y Especias: Incorpora el tomate triturado, el caldo de verduras y el orégano. Lleva a ebullición.<br>-Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 20 minutos para que los sabores se desarrollen.<br>-Pasta y Alubias: Añade la pasta integral y las alubias. Cocina según las instrucciones de la pasta (generalmente 8-10 minutos), o hasta que esté al dente. <br>-Espinacas: En los últimos 2 minutos, agrega las espinacas frescas y cocina hasta que se marchiten. <br>-Servir: Sazona con sal y pimienta. Sirve caliente, opcionalmente con queso parmesano.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec26_l1rg8s.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (alubias, espinacas, pasta integral).<br>-Vitamina C: Aproximadamente 30-40 mg (tomate, zanahorias, apio).<br>-Calorías: 350-400 kcal<br>-Proteínas: 15-18g<br>-Grasas: 8-10g<br>-Carbohidratos: 50-60g'
+    },
+    Receta27: {
+        nombre: 'Smash de Palta y Huevo Duro en Tostadas de Arroz',
+        tipo: ['Desayuno','Cena'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-2 tostadas de arroz (galletas de arroz inflado)<br>-1/2 palta madura<br>-1 huevo duro, picado<br>-Sal y pimienta al gusto<br>-Opcional: Hojuelas de chile o pimentón dulce.',
+        preparacion: '-Preparar Huevo y Palta: Cocina el huevo hasta que esté duro, pela y pícalo finamente. En un bol, machaca la palta con un tenedor y sazona con sal y pimienta. <br>-Combinar: Mezcla suavemente el huevo picado con la palta machacada.<br>-Montar Tostadas: Unta la mezcla sobre las tostadas de arroz.<br>-Servir: Espolvorea con hojuelas de chile o pimentón si lo deseas, y sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec27_oyhabw.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (palta, huevo).<br>-Calorías: 250-300 kcal<br>-Proteínas: 8-10g<br>-Grasas: 18-22g<br>-Carbohidratos: 15-20g'
+    },
+    Receta28: {
+        nombre: 'Cazuela de Pollo con Patatas, Zanahorias y Tomillo',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-2 pechugas de pollo sin piel ni hueso, cortadas en cubos<br>-2 patatas medianas, peladas y cortadas en cubos<br>-2 zanahorias medianas, peladas y cortadas en rodajas gruesas<br>-1 cebolla pequeña, picada<br>-2 dientes de ajo, picados<br>-3 tazas de caldo de pollo bajo en sodio<br>-1 cucharadita de tomillo seco<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar (opcional).',
+        preparacion: '-Dorar Pollo: En una olla grande o cazuela apta para horno a fuego medio-alto, calienta el aceite. Sazona los cubos de pollo con sal y pimienta y dóralos por todos lados. Retira el pollo y reserva.<br>-Sofrito: En la misma olla, añade la cebolla, zanahorias y patatas. Cocina por 5-7 minutos hasta que empiecen a ablandarse. Agrega el ajo y el tomillo y cocina por 1 minuto más.<br>-Combinar y Cocinar: Regresa el pollo a la olla. Vierte el caldo de pollo. Lleva a ebullición, luego reduce el fuego, tapa y cocina a fuego lento durante 25-30 minutos, o hasta que las patatas y el pollo estén tiernos y cocidos. <br>-Servir: Sazona con sal y pimienta al gusto. Sirve caliente, decorado con perejil fresco si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec28_vhzpwx.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1.5-2.5 mg (pollo).<br>-Vitamina C: Aproximadamente 25-35 mg (patatas, zanahorias).<br>-Calorías: 400-450 kcal<br>-Proteínas: 30-35g<br>-Grasas: 10-15g<br>-Carbohidratos: 30-35g'
+    },
+    Receta29: {
+        nombre: 'Batido de Remolacha, Naranja y Jengibre',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 remolacha mediana, cocida y picada<br>-1 naranja grande, pelada y sin semillas<br>-1 trozo pequeño de jengibre fresco (aprox. 1 cm), pelado<br>-1/2 taza de agua o jugo de naranja natural<br>-Opcional: Miel o sirope de arce al gusto.',
+        preparacion: '-Preparar Ingredientes: Si la remolacha está cruda, hiérvela o ásala hasta que esté tierna, luego pélala y pícala. Pela la naranja y el jengibre. <br>-Licuar: Coloca todos los ingredientes en una licuadora: remolacha, naranja, jengibre y el agua/jugo. <br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave. Si la consistencia es muy espesa, añade un poco más de líquido. <br>-Servir: Sirve inmediatamente para aprovechar al máximo los nutrientes.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec29_w4kdfl.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (remolacha).<br>-Vitamina C: Muy alto contenido (naranja) - más de 100 mg.<br>-Calorías: 180-220 kcal<br>-Proteínas: 3-5g<br>-Grasas: 0-1g<br>-Carbohidratos: 40-50g'
+    },
+    Receta30: {
+        nombre: 'Pasta Integral con Salsa Boloñesa de Lentejas y Verduras',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de lentejas pardinas (secas), cocidas y escurridas<br>-200g de pasta integral (espagueti, penne)<br>-1 cebolla mediana, picada finamente<br>-2 zanahorias pequeñas, picadas finamente<br>-2 tallos de apio, picados finamente<br>-2 dientes de ajo, picados<br>-1 lata (800g) de tomate triturado<br>-1/2 taza de caldo de verduras<br>-1 cucharadita de orégano seco<br>-1 cucharada de aceite de oliva virgen extra<br>-Sal y pimienta al gusto<br>-Opcional: Perejil fresco picado para decorar.',
+        preparacion: '-Preparar Sofrito: En una olla grande a fuego medio, calienta el aceite de oliva. Añade la cebolla, zanahorias y apio. Sofríe por 8-10 minutos hasta que las verduras estén tiernas. Agrega el ajo y cocina por 1 minuto más.<br>-Añadir Ingredientes: Incorpora el tomate triturado, el caldo de verduras y el orégano. Lleva a ebullición. <br>-Cocinar Salsa: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 20 minutos, revolviendo ocasionalmente. <br>-Añadir Lentejas: Agrega las lentejas cocidas y mezcla. Cocina por otros 5-10 minutos para que los sabores se integren.<br>-Cocinar Pasta: Mientras la salsa se cocina, hierve la pasta integral según las instrucciones del paquete hasta que esté al dente. Escurre.<br>-Servir: Sirve la pasta con la salsa boloñesa de lentejas y decora con perejil fresco si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024218/rec30_fep8di.avif',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 4-5 mg (lentejas, pasta integral).<br>-Vitamina C: Aproximadamente 30-40 mg (tomate, zanahorias, apio).<br>-Calorías: 450-500 kcal<br>-Proteínas: 20-25g<br>-Grasas: 10-12g<br>-Carbohidratos: 70-80g'
+    },
+    Receta31: {
+        nombre: 'Cereal Fortificado con Leche y Frutos Rojos',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de cereal fortificado con hierro (ej. avena instantánea fortificada, corn flakes fortificados)<br>-1 taza de leche (vaca o vegetal, preferiblemente fortificada con B12)<br>-1/2 taza de frutos rojos frescos o congelados (fresas, arándanos, frambuesas)<br>-Opcional: 1 cucharadita de semillas de chía o lino para más nutrientes.',
+        preparacion: '-Preparar Cereal: Coloca el cereal en un bol. Si usas avena, prepárala según las instrucciones del paquete con la leche caliente o fría. <br>-Añadir Toppings: Vierte la leche sobre el cereal. Agrega los frutos rojos por encima. <br>-Toque Extra: Si lo deseas, espolvorea las semillas de chía o lino. <br>-Servir: Disfruta de inmediato.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024218/rec31_pusgds.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Muy alto contenido (cereal fortificado) - variable, puede superar los 5 mg.<br>-Vitamina C: Aproximadamente 50-70 mg (frutos rojos).<br>-Calorías: 250-300 kcal<br>-Proteínas: 8-12g<br>-Grasas: 5-8g<br>-Carbohidratos: 40-55g'
+    },
+    Receta32: {
+        nombre: 'Salmón al Papillote con Espárragos y Tomates Cherry',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-1 filete de salmón (aprox. 150-180g)<br>-1 taza de espárragos, con los extremos duros retirados<br>-1/2 taza de tomates cherry, cortados por la mitad<br>-1 cucharada de aceite de oliva<br>-Jugo de 1/2 limón<br>-2 ramitas de eneldo fresco (o 1/2 cucharadita seco)<br>-Sal y pimienta al gusto<br>-Papel de hornear o papel de aluminio.',
+        preparacion: '-Precalentar Horno: Precalienta el horno a 200°C (400°F).<br>-Preparar Papillote: Corta un trozo grande de papel de hornear o aluminio. Coloca el filete de salmón en el centro. <br>-Añadir Verduras y Condimentos: Alrededor del salmón, distribuye los espárragos y los tomates cherry. Rocía todo con el aceite de oliva y el jugo de limón. Sazona con sal, pimienta y las ramitas de eneldo.<br>-Cerrar Papillote: Dobla el papel sobre el salmón y las verduras, sellando los bordes para formar un paquete. Asegúrate de que quede bien cerrado para que el vapor no escape. <br>-Hornear: Coloca el paquete en una bandeja para hornear y hornea durante 15-20 minutos, o hasta que el salmón esté cocido y los espárragos tiernos. <br>-Servir: Abre el papillote con cuidado (el vapor estará caliente) y sirve el salmón y las verduras directamente del paquete.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024221/rec32_mmjokt.png',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1-2 mg (salmón).<br>-Vitamina C: Aproximadamente 40-50 mg (espárragos, tomates cherry).<br>-Calorías: 400-450 kcal<br>-Proteínas: 30-35g<br>-Grasas: 20-25g<br>-Carbohidratos: 10-15g'
+    },
+    Receta33: {
+        nombre: 'Ensalada de Espinacas Baby, Naranja, Cebolla Roja y Pistachos',
+        tipo: ['Almuerzo','Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-3 tazas de espinacas baby frescas<br>-1 naranja grande, pelada y cortada en gajos<br>-1/4 cebolla roja, finamente rebanada<br>-2 cucharadas de pistachos pelados<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre de manzana, una pizca de sal y pimienta.',
+        preparacion: '-Preparar Aderezo: En un bol pequeño, bate el aceite de oliva, el vinagre de manzana, la sal y la pimienta hasta emulsionar.<br>-Combinar Ingredientes: En un bol grande, combina las espinacas baby, los gajos de naranja y las rebanadas finas de cebolla roja. <br>-Aderezar y Servir: Vierte el aderezo sobre la ensalada y mezcla suavemente. Espolvorea los pistachos por encima antes de servir.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024217/rec33_nx1wb4.avif', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas, pistachos).<br>-Vitamina C: Muy alto contenido (naranja) - más de 100 mg.<br>-Calorías: 250-300 kcal<br>-Proteínas: 5-8g<br>-Grasas: 18-22g<br>-Carbohidratos: 20-25g'
+    },
+    Receta34: {
+        nombre: 'Tortilla de Papa con Arverja y Huevo',
+        tipo: ['Desayuno','Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 papas medianas, peladas y cortadas en dados pequeños<br>-1/2 taza de arverjas congeladas<br>-3 huevos grandes<br>-1/4 cebolla pequeña, picada finamente (opcional)<br>-2 cucharadas de aceite de oliva<br>-Sal y pimienta al gusto.',
+        preparacion: '-Cocinar Papas: En una sartén antiadherente a fuego medio, calienta 1 cucharada de aceite. Añade las papas y cocina, removiendo ocasionalmente, hasta que estén tiernas y ligeramente doradas (unos 15-20 minutos). Si usas cebolla, añádela a mitad de cocción de las papas. <br>-Añadir Arverjas: En los últimos 5 minutos de cocción de las papas, agrega las arverjas y cocina hasta que estén tiernas. Retira las verduras de la sartén y resérvalas.<br>-Batir Huevos: En un bol grande, bate los huevos con sal y pimienta. Añade las papas y arverjas cocidos a los huevos y mezcla bien. <br>-Hacer Tortilla: Calienta la cucharada restante de aceite en la misma sartén a fuego medio-bajo. Vierte la mezcla de huevo y papa en la sartén. Cocina sin mover hasta que los bordes empiecen a cuajar y la parte superior esté casi lista (unos 8-10 minutos). Con la ayuda de un plato, dale la vuelta a la tortilla y cocina por el otro lado hasta que esté dorada y cocida a tu gusto (otros 5-7 minutos). <br>-Servir: Deja reposar unos minutos antes de cortar y servir.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024218/rec34_tdjiox.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-3 mg (arverja, papa, huevos).<br>-Vitamina C: Aproximadamente 20-30 mg (arverja, papa).<br>-Calorías: 400-450 kcal<br>-Proteínas: 20-25g<br>-Grasas: 25-30g<br>-Carbohidratos: 25-30g'
+    },
+    Receta35: {
+        nombre: 'Smoothie Verde con Kiwi, Mango y Semillas de Calabaza',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 kiwi, pelado<br>-1/2 taza de mango congelado en trozos<br>-1/2 taza de espinacas frescas<br>-1 cucharada de semillas de calabaza (pepitas)<br>-1/2 taza de agua o bebida vegetal<br>-Opcional: 1 cucharadita de miel o sirope de arce si el mango no es muy dulce.',
+        preparacion: '-Licuar: Coloca todos los ingredientes en una licuadora. <br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave y homogénea. Si es necesario, añade un poco más de líquido hasta la consistencia deseada. <br>-Servir: Sirve inmediatamente para disfrutar de sus nutrientes.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec35_cfqtin.png',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas, semillas de calabaza).<br>-Vitamina C: Muy alto contenido (kiwi, mango) - más de 100 mg.<br>-Calorías: 180-220 kcal<br>-Proteínas: 4-6g<br>-Grasas: 5-8g<br>-Carbohidratos: 30-40g'
+    },
+    Receta36: {
+        nombre: 'Albóndigas de Res Caseras en Salsa de Tomate con Arroz',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-250g de carne picada de res magra<br>-1 huevo pequeño<br>-1/4 taza de pan rallado integral<br>-1/4 cebolla pequeña, rallada finamente<br>-1 diente de ajo, picado finamente<br>-1 cucharada de perejil fresco picado<br>-Sal y pimienta al gusto<br>-Para la salsa: 1 lata (400g) de tomate triturado, 1/2 taza de caldo de res bajo en sodio, 1 cucharadita de orégano seco, 1 cucharada de aceite de oliva.<br>-Arroz blanco o integral cocido para acompañar.',
+        preparacion: '-Preparar Albóndigas: En un bol grande, mezcla la carne picada, el huevo, el pan rallado, la cebolla rallada, el ajo picado, el perejil, sal y pimienta. Amasa bien hasta que todos los ingredientes estén combinados. Forma pequeñas albóndigas del tamaño de una nuez.<br>-Dorar Albóndigas: En una sartén grande a fuego medio-alto, calienta el aceite de oliva. Dora las albóndigas por todos lados hasta que estén selladas. Retira y reserva.<br>-Preparar Salsa: En la misma sartén, vierte el tomate triturado, el caldo de res y el orégano. Lleva a ebullición suave. <br>-Cocinar Albóndigas en Salsa: Regresa las albóndigas a la sartén con la salsa. Reduce el fuego a bajo, tapa y cocina a fuego lento durante 20-25 minutos, o hasta que las albóndigas estén bien cocidas por dentro y la salsa haya espesado ligeramente. <br>-Servir: Sirve las albóndigas con su salsa acompañadas de arroz cocido.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024217/rec36_j2oh5p.webp',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 3-4 mg (carne de res).<br>-Vitamina C: Aproximadamente 20-30 mg (tomate).<br>-Calorías: 450-500 kcal (sin el arroz)<br>-Proteínas: 35-40g<br>-Grasas: 20-25g<br>-Carbohidratos: 20-25g'
+    },
+    Receta37: {
+        nombre: 'Tortitas de Avena y Plátano con Frutos Rojos',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 plátano maduro, machacado<br>-1/2 taza de hojuelas de avena<br>-1/2 taza de leche (vaca o vegetal)<br>-1 huevo<br>-1/2 cucharadita de polvo para hornear<br>-Una pizca de canela<br>-1/2 taza de frutos rojos frescos o congelados<br>-1 cucharadita de aceite de coco o vegetal para cocinar.',
+        preparacion: '-Preparar Masa: En un bol, machaca el plátano. Añade la avena, la leche, el huevo, el polvo para hornear y la canela. Mezcla bien hasta obtener una masa homogénea. Deja reposar por 5 minutos para que la avena absorba un poco de líquido.<br>-Cocinar Tortitas: Calienta el aceite en una sartén antiadherente a fuego medio. Vierte cucharadas de la masa para formar las tortitas. Cocina por 2-3 minutos por cada lado, o hasta que estén doradas y cocidas. <br>-Servir: Sirve las tortitas calientes, acompañadas de frutos rojos.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024217/rec37_dj8rnk.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (avena).<br>-Vitamina C: Aproximadamente 40-60 mg (frutos rojos).<br>-Calorías: 350-400 kcal<br>-Proteínas: 10-12g<br>-Grasas: 10-15g<br>-Carbohidratos: 50-60g'
+    },
+    Receta38: {
+        nombre: 'Salteado de Camarones con Brócoli y Pimiento Rojo',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-200g de camarones frescos o congelados (pelados y desvenados)<br>-2 tazas de floretes de brócoli<br>-1 pimiento rojo, cortado en tiras<br>-2 dientes de ajo, picados<br>-1 cucharadita de jengibre fresco, rallado<br>-2 cucharadas de salsa de soja baja en sodio (o tamari)<br>-1 cucharada de aceite de sésamo o vegetal<br>-Sal y pimienta al gusto<br>-Arroz integral o quinoa para acompañar.',
+        preparacion: '-Preparar Camarones: Si los camarones son congelados, descongélalos y sécalos bien. Sazona con sal y pimienta. <br>-Saltear Verduras: En un wok o sartén grande a fuego medio-alto, calienta el aceite. Añade el brócoli y el pimiento rojo. Saltea por 5-7 minutos hasta que estén tiernos pero aún crujientes. <br>-Añadir Aromáticos y Camarones: Agrega el ajo y el jengibre al wok y saltea por 1 minuto hasta que estén fragantes. Incorpora los camarones y cocina por 3-5 minutos, o hasta que estén rosados y cocidos.<br>-Añadir Salsa: Vierte la salsa de soja y revuelve para cubrir todos los ingredientes. Cocina por 1 minuto más. <br>-Servir: Sirve caliente acompañado de arroz integral o quinoa.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024217/rec38_d3ollj.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1.5-2 mg (camarones).<br>-Vitamina C: Aproximadamente 80-100 mg (brócoli, pimiento rojo).<br>-Calorías: 350-400 kcal (sin el arroz)<br>-Proteínas: 25-30g<br>-Grasas: 10-15g<br>-Carbohidratos: 20-25g'
+    },
+    Receta39: {
+        nombre: 'Bowl de Quinoa con Mango, Frijoles Negros y Aguacate',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de quinoa cocida<br>-1/2 taza de frijoles negros cocidos (de lata, enjuagados y escurridos)<br>-1/2 mango maduro, picado en cubos<br>-1/2 aguacate maduro, picado en cubos<br>-1/4 cebolla morada, finamente picada<br>-2 cucharadas de cilantro fresco picado<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, jugo de 1 lima, una pizca de comino molido, sal y pimienta al gusto.',
+        preparacion: '-Preparar Aderezo: En un bol pequeño, bate el aceite de oliva, el jugo de lima, el comino, la sal y la pimienta hasta emulsionar.<br>-Combinar Ingredientes: En un bol grande, combina la quinoa cocida y enfriada, los frijoles negros, el mango, el aguacate, la cebolla morada y el cilantro. <br>-Aderezar y Servir: Vierte el aderezo sobre la mezcla y revuelve suavemente para combinar. Sirve fresco.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024216/rec39_ydsr94.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (quinoa, frijoles negros).<br>-Vitamina C: Aproximadamente 50-70 mg (mango, aguacate, lima, cilantro).<br>-Calorías: 400-450 kcal<br>-Proteínas: 15-18g<br>-Grasas: 18-22g<br>-Carbohidratos: 45-50g'
+    },
+    Receta40: {
+        nombre: 'Salteado de Hígado de Pollo con Pimientos y Cebolla',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-250g de hígado de pollo, limpio y cortado en trozos<br>-1 pimiento verde, cortado en tiras<br>-1 pimiento rojo, cortado en tiras<br>-1 cebolla mediana, cortada en juliana<br>-2 dientes de ajo, picados<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta negra al gusto<br>-Opcional: Arroz blanco o integral para acompañar.',
+        preparacion: '-Sofrito de Verduras: En una sartén grande o wok a fuego medio-alto, calienta el aceite. Añade la cebolla y los pimientos. Saltea por 5-7 minutos hasta que estén tiernos pero aún crujientes. Agrega el ajo y cocina por 1 minuto más. Retira las verduras y reserva.<br>-Cocinar Hígado: En la misma sartén, si es necesario, añade un poco más de aceite. Agrega el hígado de pollo y cocina a fuego medio-alto por 3-5 minutos por cada lado, o hasta que esté cocido a tu gusto (ligeramente rosado por dentro es lo ideal para mantener la terneza). Sazona con sal y pimienta.<br>-Combinar: Regresa las verduras salteadas a la sartén con el hígado y revuelve suavemente para combinar. <br>-Servir: Sirve caliente, opcionalmente con arroz.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024216/rec40_iftcmo.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Muy alto contenido (hígado de pollo) - más de 10 mg.<br>-Vitamina C: Aproximadamente 60-80 mg (pimientos).<br>-Calorías: 350-400 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 10-15g'
+    },
+    Receta41: {
+        nombre: 'Batido de Espinacas, Piña y Coco',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de espinacas frescas<br>-1 taza de piña congelada en trozos<br>-1/2 taza de agua de coco (o agua)<br>-Opcional: 1 cucharada de coco rallado sin azúcar.',
+        preparacion: '-Licuar: Coloca todos los ingredientes en una licuadora. <br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave y homogénea. Si la consistencia es muy espesa, añade un poco más de líquido. <br>-Servir: Sirve inmediatamente para aprovechar al máximo los nutrientes.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024219/rec41_c5aypy.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (espinacas).<br>-Vitamina C: Muy alto contenido (piña) - más de 80 mg.<br>-Calorías: 150-200 kcal<br>-Proteínas: 2-4g<br>-Grasas: 1-2g<br>-Carbohidratos: 30-40g'
+    },
+    Receta42: {
+        nombre: 'Curry de Garbanzos y Batata (Camote) con Espinacas',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (400g) de garbanzos cocidos y escurridos<br>-1 batata mediana, pelada y cortada en cubos<br>-2 tazas de espinacas frescas<br>-1 cebolla mediana, picada<br>-2 dientes de ajo, picados<br>-1 trozo pequeño de jengibre fresco, rallado<br>-1 lata (400ml) de leche de coco light<br>-1 cucharada de pasta de curry amarillo (o 2 cucharaditas de curry en polvo)<br>-1 cucharada de aceite de coco o vegetal<br>-Sal y pimienta al gusto<br>-Arroz basmati o integral para acompañar.',
+        preparacion: '-Sofrito Aromático: En una olla grande a fuego medio, calienta el aceite. Agrega la cebolla y cocina hasta que esté transparente. Añade el ajo, el jengibre y la pasta de curry, y cocina por 1 minuto más hasta que esté fragante.<br>-Añadir Batata y Líquido: Incorpora la batata cortada en cubos y la leche de coco. Lleva a ebullición. <br>-Cocción a Fuego Lento: Reduce el fuego a bajo, tapa y cocina a fuego lento por 15-20 minutos, o hasta que la batata esté tierna. <br>-Añadir Garbanzos y Espinacas: Agrega los garbanzos escurridos y las espinacas frescas. Cocina por 5-7 minutos más, o hasta que las espinacas se hayan marchitado y los garbanzos estén calientes. <br>-Servir: Sazona con sal y pimienta. Sirve caliente acompañado de arroz basmati o integral.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024217/rec42_w2h1wt.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3.5-4.5 mg (garbanzos, espinacas).<br>-Vitamina C: Aproximadamente 60-80 mg (batata, espinacas).<br>-Calorías: 450-500 kcal<br>-Proteínas: 15-20g<br>-Grasas: 20-25g<br>-Carbohidratos: 50-60g'
+    },
+    Receta43: {
+        nombre: 'Ensalada de Hojas Verdes, Lentejas y Nuez con Aderezo de Mostaza y Miel',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-3 tazas de mezcla de hojas verdes (lechuga, rúcula, espinacas)<br>-1/2 taza de lentejas cocidas (pardinas o de Puy)<br>-1/4 taza de nueces picadas<br>-Opcional: 1/4 taza de queso de cabra desmenuzado (para opción vegetariana)<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre de manzana, 1 cucharadita de mostaza Dijon, 1 cucharadita de miel o sirope de arce, sal y pimienta al gusto.',
+        preparacion: '-Preparar Aderezo: En un bol pequeño, bate todos los ingredientes del aderezo hasta que estén bien emulsionados.<br>-Combinar Ensalada: En un bol grande, combina las hojas verdes, las lentejas cocidas y las nueces picadas. Si usas, añade el queso de cabra.<br>-Aderezar y Servir: Vierte el aderezo sobre la ensalada y mezcla suavemente para cubrir todos los ingredientes. Sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753024216/rec43_njbtmn.webp', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2.5-3.5 mg (lentejas, nueces, hojas verdes).<br>-Calorías: 300-350 kcal<br>-Proteínas: 10-12g<br>-Grasas: 20-25g<br>-Carbohidratos: 20-25g'
+    },
+    Receta44: { /*me quedo aqui x2 */
+        nombre: 'Sopa de Calabaza y Zanahoria con Jengibre y Semillas de Calabaza',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 tazas de calabaza, pelada y troceada<br>-2 zanahorias medianas, peladas y troceadas<br>-1 cebolla pequeña, picada<br>-1 trozo de jengibre fresco (aprox. 2 cm), pelado y rallado<br>-4 tazas de caldo de verduras bajo en sodio<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Para decorar: 1 cucharada de semillas de calabaza tostadas.',
+        preparacion: '-Sofrito: En una olla grande a fuego medio, calienta el aceite. Añade la cebolla y sofríe hasta que esté transparente. Agrega el jengibre rallado y cocina por 1 minuto más.<br>-Añadir Verduras y Caldo: Incorpora la calabaza y las zanahorias troceadas. Vierte el caldo de verduras. Lleva a ebullición. <br>-Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 20-25 minutos, o hasta que las verduras estén muy tiernas.<br>-Licuar: Retira la olla del fuego. Con una batidora de inmersión (o licuadora de vaso), tritura la sopa hasta obtener una consistencia suave y cremosa. <br>-Servir: Sazona con sal y pimienta. Sirve caliente, decorada con semillas de calabaza tostadas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036774/rec44_slhwht.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (semillas de calabaza, calabaza, zanahoria).<br>-Vitamina C: Aproximadamente 30-40 mg (calabaza, zanahoria).<br>-Calorías: 200-250 kcal<br>-Proteínas: 5-7g<br>-Grasas: 8-10g<br>-Carbohidratos: 30-35g'
+    },
+    Receta45: {
+        nombre: 'Tostadas de Queso Ricotta, Fresas y Semillas de Chía',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 rebanadas de pan integral o de centeno tostado<br>-1/2 taza de queso ricotta (bajo en grasa, si se desea)<br>-1 taza de fresas frescas, lavadas y rebanadas<br>-1 cucharada de semillas de chía<br>-Opcional: un chorrito de miel o sirope de arce.',
+        preparacion: '-Tostar Pan: Tuesta el pan hasta que esté dorado y crujiente.<br>-Montar Tostadas: Unta el queso ricotta sobre las tostadas. <br>-Añadir Toppings: Coloca las rebanadas de fresa sobre el ricotta. Espolvorea generosamente con semillas de chía. <br>-Finalizar: Si lo deseas, añade un chorrito de miel o sirope de arce. Sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036774/rec45_zkssrw.avif',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (semillas de chía, pan).<br>-Vitamina C: Muy alto contenido (fresas) - más de 80 mg.<br>-Calorías: 300-350 kcal<br>-Proteínas: 15-20g<br>-Grasas: 15-20g<br>-Carbohidratos: 25-30g'
+    },
+    Receta46: {
+        nombre: 'Estofado de Cordero con Patatas, Zanahorias y Guisantes',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-400g de cordero para estofar, cortado en cubos<br>-2 cucharadas de aceite de oliva<br>-1 cebolla grande, picada<br>-2 zanahorias grandes, peladas y cortadas en rodajas gruesas<br>-2 patatas medianas, peladas y cortadas en cubos grandes<br>-2 dientes de ajo, picados<br>-4 tazas de caldo de cordero o res bajo en sodio<br>-1 taza de guisantes congelados<br>-1 hoja de laurel<br>-1 cucharadita de romero seco<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar.',
+        preparacion: '-Dorar Cordero: En una olla grande de fondo grueso a fuego medio-alto, calienta el aceite. Sazona el cordero con sal y pimienta y dóralo en tandas hasta que esté bien sellado. Retira la carne y reserva.<br>-Sofrito: Reduce el fuego a medio y añade la cebolla a la olla. Sofríe hasta que esté transparente. Agrega el ajo y cocina por 1 minuto más.<br>-Añadir Vegetales y Líquido: Incorpora las zanahorias, las patatas, la hoja de laurel y el romero. Regresa el cordero a la olla. Vierte el caldo. Lleva a ebullición.<br>-Cocción Lenta: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 1.5 a 2 horas, o hasta que el cordero esté muy tierno. Revuelve ocasionalmente.<br>-Añadir Guisantes: En los últimos 10 minutos de cocción, añade los guisantes congelados y cocina hasta que estén tiernos.<br>-Servir: Retira la hoja de laurel. Sazona con sal y pimienta al gusto. Sirve caliente, decorado con perejil fresco.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036774/rec46_pfanfw.webp',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 4-5 mg (cordero).<br>-Vitamina C: Aproximadamente 20-30 mg (guisantes, patata, zanahoria).<br>-Calorías: 500-600 kcal<br>-Proteínas: 35-45g<br>-Grasas: 25-30g<br>-Carbohidratos: 30-40g'
+    },
+    Receta47: {
+        nombre: 'Bowl de Avena Cremosa con Ciruelas Pasas y Almendras',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1/2 taza de hojuelas de avena<br>-1 taza de agua o bebida vegetal<br>-4-5 ciruelas pasas, picadas<br>-2 cucharadas de almendras laminadas<br>-1/2 cucharadita de canela en polvo<br>-Opcional: un chorrito de miel o sirope de arce.',
+        preparacion: '-Cocinar Avena: En una olla pequeña, combina la avena y el agua/bebida vegetal. Lleva a ebullición a fuego medio. <br>-Cocción Lenta: Reduce el fuego a bajo y cocina a fuego lento, revolviendo ocasionalmente, durante 5-7 minutos, o hasta que la avena haya absorbido el líquido y tenga la consistencia deseada. <br>-Mezclar y Servir: Retira del fuego. Incorpora las ciruelas pasas picadas, la mitad de las almendras laminadas y la canela. Si deseas, añade un poco de miel o sirope. <br>-Decorar: Sirve en un bol y decora con el resto de las almendras laminadas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036774/rec47_xghrfh.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2.5-3.5 mg (avena, ciruelas pasas, almendras).<br>-Calorías: 350-400 kcal<br>-Proteínas: 8-10g<br>-Grasas: 15-20g<br>-Carbohidratos: 50-60g'
+    },
+    Receta48: {
+        nombre: 'Pescado Blanco al Horno con Patatas Asadas y Tomillo',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-2 filetes de pescado blanco (bacalao, merluza, tilapia, aprox. 150g cada uno)<br>-2 patatas medianas, peladas y cortadas en gajos<br>-1 cucharada de aceite de oliva<br>-1 cucharadita de tomillo seco<br>-Sal y pimienta al gusto<br>-Jugo de 1/2 limón<br>-Opcional: rodajas de limón para el horneado.',
+        preparacion: '-Precalentar Horno y Preparar Patatas: Precalienta el horno a 200°C (400°F). En una bandeja para hornear, mezcla los gajos de patata con 1/2 cucharada de aceite de oliva, sal, pimienta y tomillo. Hornea por 20 minutos.<br>-Preparar Pescado: Mientras, seca los filetes de pescado con papel de cocina. Sazona con sal y pimienta. <br>-Hornear Pescado: Pasados los 20 minutos de las patatas, retira la bandeja del horno. Coloca los filetes de pescado en la misma bandeja junto a las patatas. Rocía el pescado con el aceite restante y el jugo de limón. Si lo deseas, coloca unas rodajas de limón encima del pescado. <br>-Finalizar Horneado: Regresa la bandeja al horno y hornea por 12-15 minutos más, o hasta que el pescado esté cocido y se desmenuce fácilmente con un tenedor, y las patatas estén doradas y tiernas. <br>-Servir: Sirve el pescado y las patatas inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036773/rec48_hzyngt.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 0.5-1 mg (pescado blanco).<br>-Vitamina C: Aproximadamente 20-30 mg (patatas, limón).<br>-Calorías: 350-400 kcal<br>-Proteínas: 30-35g<br>-Grasas: 10-15g<br>-Carbohidratos: 25-30g'
+    },
+    Receta49: {
+        nombre: 'Tortilla Francesa Rellena de Espinacas y Queso (opcional)',
+        tipo: ['Desayuno','Cena'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-2 huevos grandes<br>-1 taza de espinacas frescas<br>-1 cucharadita de aceite de oliva<br>-Sal y pimienta al gusto<br>-Opcional: 2 cucharadas de queso bajo en grasa rallado (ej. mozzarella, feta light).',
+        preparacion: '-Saltear Espinacas: En una sartén pequeña antiadherente a fuego medio, calienta el aceite. Añade las espinacas y cocina hasta que se marchiten (1-2 minutos). Sazona con una pizca de sal y pimienta. Retira de la sartén y reserva. <br>-Batir Huevos: En un bol, bate los huevos con sal y pimienta. <br>-Hacer Tortilla: Vuelve a calentar la sartén a fuego medio-bajo. Vierte los huevos batidos. Cuando los bordes empiecen a cuajar, distribuye las espinacas salteadas sobre una mitad de la tortilla. Si usas, espolvorea el queso. <br>-Doblar y Cocinar: Cuando la tortilla esté casi cuajada, dóblala por la mitad con una espátula. Cocina por un minuto más por cada lado hasta que esté dorada y cocida a tu gusto. <br>-Servir: Sirve caliente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036772/rec49_rs4yg3.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas).<br>-Calorías: 200-250 kcal<br>-Proteínas: 12-15g<br>-Grasas: 12-15g<br>-Carbohidratos: 5-8g'
+    },
+    Receta50: {
+        nombre: 'Ensalada de Garbanzos Asados con Calabacín y Pimentón',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (400g) de garbanzos cocidos, escurridos y enjuagados<br>-1 calabacín mediano, cortado en cubos<br>-1/2 pimiento rojo, cortado en cubos<br>-1 cucharada de aceite de oliva<br>-1 cucharadita de pimentón dulce (o ahumado)<br>-1/2 cucharadita de comino molido<br>-Sal y pimienta al gusto<br>-Opcional: perejil fresco picado para decorar.',
+        preparacion: '-Precalentar Horno: Precalienta el horno a 200°C (400°F).<br>-Preparar Verduras y Garbanzos: En un bol grande, combina los garbanzos escurridos, el calabacín, el pimiento rojo, el aceite de oliva, el pimentón, el comino, sal y pimienta. Mezcla bien para que todo se impregne.<br>-Asar: Extiende la mezcla en una sola capa sobre una bandeja para hornear. Hornea durante 25-30 minutos, revolviendo a mitad de cocción, hasta que los garbanzos estén ligeramente crujientes y las verduras tiernas y doradas. <br>-Servir: Sirve caliente o a temperatura ambiente. Decora con perejil fresco si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036772/rec50_yoicft.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (garbanzos).<br>-Vitamina C: Aproximadamente 30-40 mg (pimiento rojo, calabacín).<br>-Calorías: 300-350 kcal<br>-Proteínas: 12-15g<br>-Grasas: 10-15g<br>-Carbohidratos: 35-40g'
+    },
+    Receta51: {
+        nombre: 'Lomo de Cerdo en Salsa de Naranja con Brócoli al Vapor',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-200g de lomo de cerdo, cortado en medallones<br>-1 cucharada de aceite de oliva<br>-1/2 taza de jugo de naranja natural<br>-1 cucharadita de maicena (fécula de maíz), disuelta en 2 cucharadas de agua fría<br>-Sal y pimienta al gusto<br>-2 tazas de floretes de brócoli<br>-Opcional: rodajas de naranja y perejil para decorar.',
+        preparacion: '-Dorar Cerdo: En una sartén a fuego medio-alto, calienta el aceite. Sazona los medallones de cerdo con sal y pimienta y dóralos por ambos lados hasta que estén cocidos (unos 3-4 minutos por lado, dependiendo del grosor). Retira el cerdo y reserva.<br>-Preparar Salsa de Naranja: En la misma sartén, vierte el jugo de naranja. Lleva a ebullición suave. Añade la maicena disuelta y revuelve constantemente hasta que la salsa espese ligeramente. Regresa el cerdo a la sartén y cocina por 1-2 minutos más para que se impregne de la salsa.<br>-Cocinar Brócoli: Mientras tanto, cocina el brócoli al vapor hasta que esté tierno pero aún crujiente (unos 5-7 minutos).<br>-Servir: Sirve los medallones de cerdo con la salsa de naranja y el brócoli al vapor. Decora con rodajas de naranja y perejil si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036774/rec51_znz8fj.webp',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1.5-2 mg (lomo de cerdo).<br>-Vitamina C: Aproximadamente 80-100 mg (naranja, brócoli).<br>-Calorías: 350-400 kcal<br>-Proteínas: 30-35g<br>-Grasas: 10-15g<br>-Carbohidratos: 15-20g'
+    },
+    Receta52: {
+        nombre: 'Cazuela de Huevos al Horno con Tomate y Espinacas',
+        tipo: ['Desayuno', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 huevos grandes<br>-1/2 taza de tomate triturado o picado<br>-1 taza de espinacas frescas<br>-1 diente de ajo, picado (opcional)<br>-1 cucharadita de aceite de oliva<br>-Sal y pimienta al gusto<br>-Opcional: tostada integral para acompañar.',
+        preparacion: '-Precalentar Horno: Precalienta el horno a 180°C (350°F).<br>-Preparar Base: En un molde individual apto para horno o una cazuelita, calienta el aceite a fuego medio. Si usas ajo, sofríelo por 30 segundos. Añade el tomate triturado y las espinacas. Cocina por 2-3 minutos hasta que las espinacas se marchiten. Extiende la mezcla en el fondo del molde.<br>-Añadir Huevos: Con cuidado, haz dos pequeños huecos en la mezcla de tomate y espinacas y rompe un huevo en cada hueco.<br>-Hornear: Sazona los huevos con sal y pimienta. Hornea durante 10-15 minutos, o hasta que las claras estén cuajadas y las yemas tengan la consistencia deseada (más líquidas o más firmes). <br>-Servir: Sirve caliente, opcionalmente con una tostada integral.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036773/rec52_ierwxw.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-2.5 mg (espinacas, huevos).<br>-Vitamina C: Aproximadamente 20-30 mg (tomate, espinacas).<br>-Calorías: 250-300 kcal<br>-Proteínas: 15-18g<br>-Grasas: 15-20g<br>-Carbohidratos: 10-15g'
+    },
+    Receta53: {
+        nombre: 'Bowl de Avena con Plátano, Mantequilla de Almendras y Semillas de Chía',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1/2 taza de hojuelas de avena<br>-1 taza de agua o bebida vegetal<br>-1/2 plátano, en rodajas<br>-1 cucharada de mantequilla de almendras natural<br>-1 cucharada de semillas de chía<br>-Opcional: una pizca de canela.',
+        preparacion: '-Cocinar Avena: En una olla pequeña, combina la avena y el agua/bebida vegetal. Lleva a ebullición a fuego medio. Reduce el fuego a bajo y cocina a fuego lento, revolviendo ocasionalmente, durante 5-7 minutos, o hasta que la avena haya absorbido el líquido y tenga la consistencia deseada. <br>-Servir y Decorar: Retira del fuego y vierte la avena en un bol. Coloca las rodajas de plátano por encima. Añade una cucharada de mantequilla de almendras y espolvorea las semillas de chía. Si lo deseas, añade una pizca de canela. <br>-Disfrutar: Sirve de inmediato.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036771/rec53_qmzrjl.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2.5-3.5 mg (avena, mantequilla de almendras, semillas de chía).<br>-Calorías: 380-430 kcal<br>-Proteínas: 10-12g<br>-Grasas: 18-22g<br>-Carbohidratos: 45-50g'
+    },
+    Receta54: {
+        nombre: 'Wrap de Pollo con Hummus, Espinacas y Pimiento Asado',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 tortilla integral grande<br>-100g de pechuga de pollo cocida y desmenuzada o picada<br>-2 cucharadas de hummus<br>-1/2 taza de espinacas frescas<br>-1/4 pimiento rojo asado (de lata o casero), cortado en tiras<br>-Opcional: 1 cucharada de cebolla morada finamente picada.',
+        preparacion: '-Preparar Tortilla: Calienta ligeramente la tortilla integral en una sartén o microondas para que sea más flexible.<br>-Montar Wrap: Extiende el hummus sobre toda la superficie de la tortilla. <br>-Añadir Relleno: Coloca una capa de espinacas frescas. Luego, distribuye el pollo cocido y las tiras de pimiento asado. Si usas, añade la cebolla morada. <br>-Enrollar: Dobla los lados de la tortilla hacia adentro y luego enrolla firmemente desde la parte inferior hacia arriba para formar un wrap. <br>-Servir: Corta por la mitad si lo deseas y sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036771/rec54_ezhsk2.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1-1.5 mg (pollo).<br>-Hierro no hemo: Aproximadamente 1.5-2.5 mg (hummus, espinacas, tortilla integral).<br>-Vitamina C: Aproximadamente 30-40 mg (pimiento asado, espinacas).<br>-Calorías: 350-400 kcal<br>-Proteínas: 25-30g<br>-Grasas: 15-20g<br>-Carbohidratos: 30-35g'
+    },
+    Receta55: {
+        nombre: 'Potaje de Garbanzos y Col Verde con Pimentón',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (400g) de garbanzos cocidos, escurridos y enjuagados<br>-3 tazas de col verde o repollo, picada<br>-1 cebolla mediana, picada<br>-2 dientes de ajo, picados<br>-1 cucharadita de pimentón dulce<br>-1/2 cucharadita de comino molido<br>-4 tazas de caldo de verduras bajo en sodio<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto.',
+        preparacion: '-Sofrito: En una olla grande a fuego medio, calienta el aceite. Añade la cebolla y cocina hasta que esté transparente. Agrega el ajo, el pimentón y el comino, y cocina por 1 minuto hasta que estén fragantes.<br>-Añadir Ingredientes: Incorpora la col verde picada y cocina, revolviendo, por 5 minutos hasta que empiece a ablandarse. Vierte el caldo de verduras y los garbanzos. Lleva a ebullición.<br>-Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 15-20 minutos, o hasta que la col esté tierna y los sabores se hayan mezclado.<br>-Servir: Sazona con sal y pimienta. Sirve caliente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec55_r7ggkh.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3.5-4.5 mg (garbanzos, col verde).<br>-Vitamina C: Aproximadamente 40-50 mg (col verde).<br>-Calorías: 300-350 kcal<br>-Proteínas: 15-18g<br>-Grasas: 8-10g<br>-Carbohidratos: 40-50g'
+    },
+    Receta56: {
+        nombre: 'Cereal Fortificado con Manzana y Canela',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1 taza de cereal fortificado con hierro (ej. avena instantánea fortificada, Special K)<br>-1 taza de leche (vaca o vegetal, preferiblemente fortificada con B12)<br>-1/2 manzana mediana, picada en cubos pequeños<br>-1/2 cucharadita de canela en polvo.',
+        preparacion: '-Preparar Cereal: Coloca el cereal en un bol. Si usas avena, prepárala según las instrucciones del paquete con la leche caliente o fría. <br>-Añadir Toppings: Vierte la leche sobre el cereal. Agrega los cubos de manzana por encima. <br>-Sabor Extra: Espolvorea la canela en polvo. <br>-Servir: Disfruta de inmediato.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec56_cqlzgv.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Muy alto contenido (cereal fortificado) - variable, puede superar los 5 mg.<br>-Calorías: 250-300 kcal<br>-Proteínas: 8-12g<br>-Grasas: 5-8g<br>-Carbohidratos: 40-55g'
+    },
+    Receta57: {
+        nombre: 'Ensalada de Atún con Espinacas, Maíz y Huevo Duro',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (aprox. 150g) de atún en agua, escurrido<br>-2 tazas de espinacas frescas<br>-1/2 taza de maíz dulce (fresco, congelado o de lata)<br>-1 huevo duro, picado<br>-1/4 cebolla roja, finamente picada<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre de sidra de manzana, sal y pimienta al gusto.',
+        preparacion: '-Preparar Aderezo: En un bol pequeño, bate el aceite de oliva, el vinagre de sidra de manzana, la sal y la pimienta hasta emulsionar.<br>-Combinar Ingredientes: En un bol grande, combina el atún desmenuzado, las espinacas frescas, el maíz y el huevo duro picado. Si usas, añade la cebolla roja.<br>-Aderezar y Servir: Vierte el aderezo sobre la ensalada y mezcla suavemente para que todos los ingredientes se impregnen. Sirve fresca.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec57_hcfg7g.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1-1.5 mg (atún).<br>-Hierro no hemo: Aproximadamente 2-2.5 mg (espinacas, huevo, maíz).<br>-Vitamina C: Aproximadamente 20-30 mg (espinacas, maíz).<br>-Calorías: 380-430 kcal<br>-Proteínas: 25-30g<br>-Grasas: 20-25g<br>-Carbohidratos: 20-25g'
+    },
+    Receta58: {
+        nombre: 'Sopa de Res con Verduras y Fideos de Arroz',
+        tipo: ['Desayuno','Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-200g de carne de res magra (ej. falda), cortada en cubos pequeños<br>-1 cucharada de aceite de oliva<br>-1 cebolla mediana, picada<br>-2 zanahorias, picadas en rodajas<br>-2 tallos de apio, picados<br>-1 taza de col china (bok choy), picada<br>-6 tazas de caldo de res bajo en sodio<br>-100g de fideos de arroz finos<br>-Sal y pimienta al gusto<br>-Cilantro fresco picado para decorar (opcional).',
+        preparacion: '-Dorar Carne: En una olla grande, calienta el aceite a fuego medio-alto. Agrega la carne y dórala por todos lados hasta que esté sellada. Retira la carne y reserva.<br>-Sofrito: Reduce el fuego a medio. Añade la cebolla, zanahorias y apio a la olla. Sofríe por 5-7 minutos hasta que estén tiernas.<br>-Añadir Líquidos y Carne: Regresa la carne a la olla. Agrega la col china y vierte el caldo de res. Lleva a ebullición.<br>-Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 30-40 minutos, o hasta que la carne esté tierna.<br>-Añadir Fideos: Incorpora los fideos de arroz y cocina según las instrucciones del paquete (normalmente 3-5 minutos), hasta que estén al dente. <br>-Servir: Sazona con sal y pimienta. Sirve caliente, espolvoreado con cilantro fresco.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036771/rec58_rel5t3.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 3-4 mg (carne).<br>-Vitamina C: Aproximadamente 20-30 mg (zanahoria, apio, col china).<br>-Calorías: 380-430 kcal<br>-Proteínas: 25-30g<br>-Grasas: 10-15g<br>-Carbohidratos: 35-40g'
+    },
+    Receta59: {
+        nombre: 'Batido de Fresas, Remolacha y Leche de Almendras',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de fresas frescas o congeladas<br>-1/2 remolacha mediana, cocida y picada<br>-1 taza de leche de almendras sin azúcar<br>-Opcional: 1 cucharadita de miel o sirope de arce si te gusta más dulce.',
+        preparacion: '-Preparar Ingredientes: Si la remolacha está cruda, hiérvela o ásala hasta que esté tierna, luego pélala y pícala. <br>-Licuar: Coloca todos los ingredientes en una licuadora: fresas, remolacha, y leche de almendras. <br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave y homogénea. Si la consistencia es muy espesa, añade un poco más de leche. <br>-Servir: Sirve inmediatamente para aprovechar al máximo los nutrientes.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036776/rec59_knmxjf.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (remolacha).<br>-Vitamina C: Muy alto contenido (fresas) - más de 100 mg.<br>-Calorías: 150-200 kcal<br>-Proteínas: 3-5g<br>-Grasas: 2-3g<br>-Carbohidratos: 30-35g'
+    },
+    Receta60: {
+        nombre: 'Cazuela de Pollo con Garbanzos, Espinacas y Pimentón',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 pechugas de pollo sin piel ni hueso, cortadas en cubos<br>-1 lata (400g) de garbanzos cocidos y escurridos<br>-2 tazas de espinacas frescas<br>-1 cebolla mediana, picada<br>-2 dientes de ajo, picados<br>-1 cucharadita de pimentón dulce<br>-1/2 cucharadita de comino molido<br>-1 lata (400g) de tomate triturado<br>-1/2 taza de caldo de pollo bajo en sodio<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Arroz integral o cuscús para acompañar.',
+        preparacion: '-Sofrito Aromático: En una olla grande a fuego medio, calienta el aceite. Agrega la cebolla y cocina hasta que esté transparente. Añade el ajo, el pimentón y el comino, y cocina por 1 minuto más hasta que estén fragantes.<br>-Dorar Pollo y Añadir Líquidos: Incorpora los cubos de pollo y dóralos ligeramente. Vierte el tomate triturado y el caldo de pollo. Lleva a ebullición.<br>-Cocción Lenta: Reduce el fuego a bajo, tapa y cocina a fuego lento por 15-20 minutos, o hasta que el pollo esté cocido.<br>-Garbanzos y Espinacas: Añade los garbanzos escurridos y las espinacas frescas. Cocina por 5-7 minutos más, o hasta que las espinacas se hayan marchitado y los garbanzos estén calientes.<br>-Servir: Sazona con sal y pimienta. Sirve caliente acompañado de arroz integral o cuscús.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036771/rec60_snq1i5.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1.5-2.5 mg (pollo).<br>-Hierro no hemo: Aproximadamente 2.5-3.5 mg (garbanzos, espinacas).<br>-Vitamina C: Aproximadamente 25-35 mg (tomate, espinacas).<br>-Calorías: 400-450 kcal<br>-Proteínas: 35-40g<br>-Grasas: 10-15g<br>-Carbohidratos: 40-50g'
+    },
+    Receta61: {
+        nombre: 'Pimientos Rellenos de Arroz Integral y Carne Picada',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 pimientos grandes (rojos o verdes), cortados por la mitad a lo largo y sin semillas<br>-250g de carne picada de res magra<br>-1/2 taza de arroz integral cocido<br>-1/2 cebolla pequeña, picada finamente<br>1 diente de ajo, picado<br>-1/2 taza de tomate triturado<br>-1/4 taza de caldo de res o agua<br>-1 cucharadita de orégano seco<br>-Sal y pimienta al gusto<br>-Opcional: 1/4 taza de queso rallado bajo en grasa para gratinar.',
+        preparacion: '-Precalentar Horno: Precalienta el horno a 190°C (375°F).<br>-Preparar Pimientos: Coloca las mitades de pimiento en una bandeja para hornear.<br>-Preparar Relleno: En una sartén, cocina la carne picada a fuego medio hasta que esté dorada. Escurre el exceso de grasa. Añade la cebolla y el ajo y cocina por 3-5 minutos hasta que la cebolla esté tierna.<br>-Mezclar Relleno: Retira la sartén del fuego. En un bol, combina la carne cocida, el arroz integral cocido, el tomate triturado, el orégano, sal y pimienta. Mezcla bien.<br>Rellenar y Hornear: Rellena las mitades de pimiento con la mezcla de carne y arroz. Vierte el caldo o agua en el fondo de la bandeja para hornear. Hornea por 30-40 minutos, o hasta que los pimientos estén tiernos y el relleno esté caliente. Si usas queso, espolvorea en los últimos 10 minutos.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036771/rec61_vvphuf.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 3-4 mg (carne picada).<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (pimientos, arroz integral).<br>-Vitamina C: Muy alto contenido (pimientos, tomate) - más de 100 mg.<br>-Calorías: 400-450 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 30-35g',
+    },
+    Receta62: {
+        nombre: 'Ensalada de Espinacas, Fresas y Nueces con Vinagreta Balsámica',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-3 tazas de espinacas frescas<br>-1 taza de fresas frescas, lavadas y cortadas en rodajas<br>-1/4 taza de nueces picadas<br>-Opcional: 1/4 taza de queso feta desmenuzado (para opción vegetariana)<br>-Para la vinagreta: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre balsámico, 1 cucharadita de miel o sirope de arce (opcional), sal y pimienta al gusto.',
+        preparacion: '-Preparar Vinagreta: En un bol pequeño, bate todos los ingredientes de la vinagreta hasta que estén bien combinados.<br>-Combinar Ensalada: En un bol grande, coloca las espinacas frescas. Agrega las rodajas de fresa y las nueces picadas. Si usas, añade el queso feta.<br>Aderezar y Servir: Vierte la vinagreta sobre la ensalada y mezcla suavemente para cubrir todos los ingredientes. Sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec62_p5vpmz.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas, nueces).<br>-Vitamina C: Muy alto contenido (fresas)- más de 80 mg.<br>-Calorías: 250-300 kcal<br>-Proteínas: 5-8g<br>-Grasas: 20-25g<br>-Carbohidratos: 15-20g',
+    },
+    Receta63: {
+        nombre: 'Batido de Plátano, Mantequilla de Cacahuete y Leche Fortificada',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1 plátano maduro<br>2 cucharadas de mantequilla de cacahuete natural<br>-1 taza de leche fortificada (vaca o vegetal fortificada con B12)<br>-Opcional: 1/2 cucharadita de cacao en polvo para sabor a chocolate.',
+        preparacion: '-Licuar: Coloca todos los ingredientes en una licuadora.<br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave y homogénea. Si es necesario, añade un poco más de leche para la consistencia deseada.<br>-Servir: Sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec63_uscq3x.avif', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (mantequilla de cacahuete).<br>-Vitamina B12: Variable (depende de si la leche es fortificada).<br>-Calorías: 350-400 kcal<br>-Proteínas: 10-15g<br>-Grasas: 15-20g<br>-Carbohidratos: 40-50g',
+    },
+    Receta64: {
+        nombre: 'Curry de Garbanzos y Col Rizada (Kale) con Leche de Coco',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (400g) de garbanzos cocidos y escurridos<br>-3 tazas de col rizada (kale), sin tallos y picada<br>-1 cebolla mediana, picada<br>-2 dientes de ajo, picados<br>-1 trozo pequeño de jengibre fresco, rallado<br>-1 lata (400ml) de leche de coco light<br>-1 cucharada de pasta de curry rojo (o 2 cucharaditas de curry en polvo)<br>-1 cucharada de aceite de coco o aceite vegetal<br>-Sal y pimienta al gusto<br>-Arroz basmati o integral para acompañar.',
+        preparacion: '-Sofrito Aromático: En una olla grande a fuego medio, calienta el aceite. Agrega la cebolla y cocina hasta que esté transparente. Añade el ajo, el jengibre y la pasta de curry, y cocina por 1 minuto más hasta que esté fragante.<br>-Líquidos y Garbanzos: Vierte la leche de coco y los garbanzos escurridos. Lleva a ebullición.<br>-Cocción a Fuego Lento: Reduce el fuego a bajo, tapa y cocina a fuego lento por 15-20 minutos, para que los sabores se mezclen.<br>-Añadir Col Rizada: Agrega la col rizada picada y cocina por 5-7 minutos más, o hasta que esté tierna y de un verde vibrante.<br>Servir: Sazona con sal y pimienta. Sirve caliente acompañado de arroz basmati o integral.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec64_rv5rqp.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 3-4 mg (garbanzos, col rizada).<br>-Vitamina C: Aproximadamente 60-80 mg (col rizada).<br>-Calorías: 400-450 kcal<br>-Proteínas: 15-20g<br>-Grasas: 20-25g<br>-Carbohidratos: 40-50g',
+    },
+    Receta65: {
+        nombre: 'Tazón de Yogur Griego con Frutos Secos y Semillas de Chía',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1 taza de yogur griego natural (sin azúcar)<br>-1/4 taza de frutos secos variados (almendras, nueces, anacardos), picados<br>-1 cucharada de semillas de chía<br>-Opcional: 1/2 taza de bayas frescas (fresas, arándanos), 1 cucharadita de miel.',
+        preparacion: '-Combinar: En un bol, coloca el yogur griego.<br>-Toppings: Espolvorea con los frutos secos picados y las semillas de chía.<br>-Personalizar: Si lo deseas, añade las bayas frescas y un chorrito de miel.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec65_rriazs.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1-1.5 mg (frutos secos, semillas de chía).<br>-Vitamina B12: Alto contenido (yogur griego).<br>-Calorías: 300-350 kcal<br>-Proteínas: 20-25g<br>-Grasas: 15-20g<br>-Carbohidratos: 15-20g',
+    },
+    Receta66 : {
+        nombre: 'Ensalada Tibia de Patata, Espinacas y Huevo Duro',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-2 patatas medianas, cocidas, peladas y cortadas en cubos<br>-2 tazas de espinacas frescas<br>-2 huevos duros, picados<br>-1/4 cebolla roja, finamente picada<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre de vino tinto, 1 cucharadita de mostaza Dijon, sal y pimienta al gusto.',
+        preparacion: '-Preparar Patatas y Huevos: Cocina las patatas hasta que estén tiernas, pela y córtalas en cubos. Cocina los huevos hasta que estén duros y pícalos.<br>-Preparar Aderezo: En un bol pequeño, bate el aceite de oliva, el vinagre de vino tinto, la mostaza Dijon, la sal y la pimienta hasta emulsionar.<br>-Combinar Ensalada: En un bol grande, combina las patatas cocidas, las espinacas frescas, los huevos picados y la cebolla roja. <br>-Aderezar y Servir: Vierte el aderezo sobre la ensalada y mezcla suavemente. Sirve tibia o a temperatura ambiente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753036770/rec66_jw8ive.avif',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-3 mg (patatas, espinacas, huevo).<br>-Vitamina C: Aproximadamente 20-30 mg (patatas, espinacas).<br>-Calorías: 350-400 kcal<br>-Proteínas: 15-18g<br>-Grasas: 20-25g<br>-Carbohidratos: 25-30g',
+    },
+    Receta67: {  /*me quedo aqui*/
+        nombre: 'Lentejas con Verduras y Fideos de Arroz',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de lentejas pardinas (secas), cocidas y escurridas<br>-4 tazas de caldo de verduras<br>-1 cebolla mediana, picada finamente<br>-2 zanahorias medianas, picadas en cubos<br>-1 pimiento verde, picado en cubos<br>-2 dientes de ajo, picados<br>-1 lata (400g) de tomate triturado<br>-1/2 taza de fideos de arroz cortos<br>-1 cucharada de aceite de oliva virgen extra<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar (opcional).',
+        preparacion: '-Sofrito: En una olla grande a fuego medio, calienta el aceite de oliva. Añade la cebolla y sofríe hasta que esté transparente. Agrega el ajo, las zanahorias y el pimiento verde. Cocina por unos 8-10 minutos, revolviendo ocasionalmente. <br>-Añadir Lentejas y Líquido: Incorpora las lentejas cocidas y el tomate triturado. Vierte el caldo de verduras. Lleva a ebullición. <br>-Cocción y Fideos: Reduce el fuego a bajo, tapa la olla y cocina a fuego lento durante 15-20 minutos. Añade los fideos de arroz y cocina por otros 3-5 minutos, o hasta que estén al dente.<br>-Servir: Sazona con sal y pimienta. Sirve caliente, decorado con perejil fresco si lo deseas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec67_nsqjdd.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 4-5 mg (lentejas, pimiento).<br>-Vitamina C: Aproximadamente 30-40 mg (pimiento, tomate, zanahorias).<br>-Calorías: 380-430 kcal<br>-Proteínas: 18-22g<br>-Grasas: 8-10g<br>-Carbohidratos: 55-65g'
+    },
+    Receta68: {
+        nombre: 'Pudín de Chía con Mango y Leche de Coco',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-3 cucharadas de semillas de chía<br>-1 taza de leche de coco light<br>-1/2 taza de mango fresco o congelado, picado en cubos<br>-1/2 cucharadita de extracto de vainilla<br>-Opcional: 1 cucharadita de miel o sirope de arce (si el mango no es muy dulce).',
+        preparacion: '-Mezclar Base: En un frasco o recipiente con tapa, combina las semillas de chía, la leche de coco, el extracto de vainilla y el endulzante (si usas). Revuelve bien para que no queden grumos. <br>-Refrigerar: Tapa el recipiente y refrigera por al menos 4 horas, o idealmente toda la noche, hasta que las semillas de chía hayan absorbido el líquido y el pudín esté espeso.<br>-Servir: Justo antes de servir, revuelve el pudín de chía y cúbrelo con los cubos de mango.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec68_qnxigm.avif',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (semillas de chía).<br>-Vitamina C: Aproximadamente 40-50 mg (mango).<br>-Calorías: 250-300 kcal<br>-Proteínas: 5-7g<br>-Grasas: 10-12g<br>-Carbohidratos: 35-40g'
+    },
+    Receta69: {
+        nombre: 'Bistec de Hígado de Res con Cebolla Caramelizada',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo'],
+        ingredientes: '-200g de hígado de res (bistec), limpio<br>-1 cebolla grande, cortada en juliana fina<br>-1 cucharada de aceite de oliva<br>-1 cucharadita de vinagre balsámico (opcional, para la cebolla)<br>-Sal y pimienta negra al gusto.',
+        preparacion: '-Caramelizar Cebolla: En una sartén a fuego medio-bajo, calienta el aceite. Añade la cebolla y cocina lentamente, revolviendo ocasionalmente, durante 15-20 minutos, hasta que esté muy tierna y caramelizada. Si lo deseas, añade el vinagre balsámico en los últimos 5 minutos. Retira la cebolla y reserva.<br>-Cocinar Hígado: Sazona el bistec de hígado con sal y pimienta. En la misma sartén (si es necesario, añade un poco más de aceite), sube el fuego a medio-alto. Cocina el hígado por 2-3 minutos por cada lado (o a tu gusto, teniendo cuidado de no sobrecocinarlo para que no quede duro). <br>-Servir: Sirve el bistec de hígado inmediatamente cubierto con la cebolla caramelizada.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec69_ydpgx3.webp',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Muy alto contenido (hígado de res) - más de 10 mg.<br>-Calorías: 300-350 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 10-15g'
+    },
+    Receta70: {
+        nombre: 'Pescado Empanizado al Horno con Ensalada de Col y Zanahoria',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-2 filetes de pescado blanco (merluza, bacalao, aprox. 150g cada uno)<br>-1/2 taza de pan rallado integral<br>-1 huevo batido<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Para la ensalada: 2 tazas de col rallada, 1 zanahoria mediana rallada, 2 cucharadas de jugo de limón, 1 cucharada de aceite de oliva, sal y pimienta.',
+        preparacion: '-Precalentar Horno y Empanizar Pescado: Precalienta el horno a 200°C (400°F). Prepara dos platos: uno con el huevo batido y otro con el pan rallado sazonado con sal y pimienta. Pasa cada filete de pescado primero por el huevo y luego por el pan rallado, cubriendo bien. <br>-Hornear Pescado: Coloca los filetes empanizados en una bandeja para hornear forrada con papel de horno. Rocía con 1 cucharada de aceite de oliva. Hornea durante 15-20 minutos, o hasta que el pescado esté cocido y el empanizado dorado y crujiente.<br>-Preparar Ensalada: Mientras el pescado se hornea, en un bol, combina la col rallada, la zanahoria rallada, el jugo de limón, el aceite de oliva, sal y pimienta. Mezcla bien. <br>-Servir: Sirve el pescado empanizado caliente junto con la ensalada de col y zanahoria.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec70_evehnw.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 0.5-1 mg (pescado blanco).<br>-Vitamina C: Aproximadamente 30-40 mg (col, zanahoria, limón).<br>-Calorías: 380-430 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 25-30g'
+    },
+    Receta71: {
+        nombre: 'Bowl de Quinua Desayuno con Manzana, Nueces y Canela',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-1/2 taza de quinoa cocida<br>-1/2 manzana, picada en cubos pequeños<br>-2 cucharadas de nueces picadas<br>-1/2 cucharadita de canela en polvo<br>-1/4 taza de leche (vaca o vegetal)<br>-Opcional: 1 cucharadita de miel o sirope de arce.',
+        preparacion: '-Preparar Quinoa: Cocina la quinoa según las instrucciones del paquete. <br>-Combinar: En un bol, combina la quinoa cocida caliente (o tibia), los cubos de manzana, las nueces picadas y la canela. <br>-Añadir Líquido y Endulzar: Vierte la leche y si lo deseas, añade miel o sirope de arce. Mezcla bien. <br>-Servir: Disfruta de inmediato.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec71_c2ermq.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-2.5 mg (quinoa, nueces).<br>-Calorías: 300-350 kcal<br>-Proteínas: 10-12g<br>-Grasas: 15-20g<br>-Carbohidratos: 30-35g'
+    },
+    Receta72: {
+        nombre: 'Ensalada de Atún con Pasta Integral, Tomate y Brócoli',
+        tipo: ['Almuerzo'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de pasta integral corta (cocida y escurrida)<br>-1 lata (aprox. 150g) de atún en agua, escurrido<br>-1 taza de floretes de brócoli, cocidos al vapor o blanqueados<br>-1 tomate mediano, picado en cubos<br>-1/4 cebolla morada, finamente picada<br>-Para el aderezo: 2 cucharadas de aceite de oliva virgen extra, 1 cucharada de vinagre balsámico, sal y pimienta al gusto.',
+        preparacion: '-Preparar Aderezo: En un bol pequeño, bate el aceite de oliva, el vinagre balsámico, la sal y la pimienta hasta emulsionar.<br>-Combinar Ingredientes: En un bol grande, combina la pasta integral cocida, el atún desmenuzado, los floretes de brócoli, el tomate picado y la cebolla morada. <br>-Aderezar y Servir: Vierte el aderezo sobre la ensalada y mezcla suavemente para que todos los ingredientes se impregnen. Sirve fresca o a temperatura ambiente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec72_pw97rh.avif',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1-1.5 mg (atún).<br>-Vitamina C: Aproximadamente 40-50 mg (brócoli, tomate).<br>-Calorías: 400-450 kcal<br>-Proteínas: 25-30g<br>-Grasas: 15-20g<br>-Carbohidratos: 40-50g'
+    },
+    Receta73: {
+        nombre: 'Sopa Crema de Espinacas y Patata',
+        tipo: ['Cena'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-2 tazas de espinacas frescas (bien compactadas)<br>-1 patata mediana, pelada y troceada<br>-1/2 cebolla pequeña, picada<br>-2 dientes de ajo, picados<br>-3 tazas de caldo de verduras bajo en sodio<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Opcional: 2 cucharadas de yogur natural o crema agria light para servir.',
+        preparacion: '-Sofrito: En una olla a fuego medio, calienta el aceite. Añade la cebolla y sofríe hasta que esté transparente. Agrega el ajo y cocina por 1 minuto más.<br>-Añadir Ingredientes: Incorpora la patata troceada y el caldo de verduras. Lleva a ebullición. <br>-Cocción: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 15-20 minutos, o hasta que la patata esté muy tierna.<br>-Añadir Espinacas y Licuar: Agrega las espinacas frescas y cocina por 2-3 minutos hasta que se marchiten. Retira la olla del fuego. Con una batidora de inmersión (o licuadora de vaso), tritura la sopa hasta obtener una consistencia suave y cremosa. <br>-Servir: Sazona con sal y pimienta. Sirve caliente, opcionalmente con una cucharada de yogur natural.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038763/rec73_euiuro.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 2-2.5 mg (espinacas, patata).<br>-Calorías: 200-250 kcal<br>-Proteínas: 8-10g<br>-Grasas: 10-12g<br>-Carbohidratos: 20-25g'
+    },
+    Receta74: {
+        nombre: 'Pollo Asado con papas y Brócoli',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-2 muslos de pollo sin piel y hueso (o pechugas), cortados en cubos grandes<br>-1 batata mediana, pelada y cortada en cubos grandes<br>-2 tazas de floretes de brócoli<br>-2 cucharadas de aceite de oliva<br>-1 cucharadita de pimentón dulce<br>-1/2 cucharadita de ajo en polvo<br>-Sal y pimienta al gusto<br>-Jugo de 1/2 limón (opcional, para servir).',
+        preparacion: '-Precalentar Horno: Precalienta el horno a 200°C (400°F).<br>-Preparar Ingredientes: En un bol grande, combina los cubos de pollo, los cubos de batata y los floretes de brócoli. Rocía con el aceite de oliva, pimentón, ajo en polvo, sal y pimienta. Mezcla bien para que todo se impregne.<br>-Asar: Extiende los ingredientes en una sola capa sobre una bandeja para hornear. Hornea durante 25-35 minutos, revolviendo a mitad de cocción, hasta que el pollo esté cocido y las verduras tiernas y ligeramente doradas. <br>-Servir: Sirve caliente. Si lo deseas, exprime un poco de jugo de limón por encima antes de servir.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038763/rec74_ttup2v.webp',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 1.5-2.5 mg (pollo).<br>-Vitamina C: Aproximadamente 80-100 mg (batata, brócoli).<br>-Calorías: 450-500 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 35-40g'
+    },
+    Receta75: {
+        nombre: 'Tostadas de Mantequilla de Cacahuete, Plátano y Semillas de Lino',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo'],
+        ingredientes: '-2 rebanadas de pan integral tostado<br>-2 cucharadas de mantequilla de cacahuete natural<br>-1 plátano pequeño, en rodajas<br>-1 cucharada de semillas de lino molidas.',
+        preparacion: '-Tostar Pan: Tuesta el pan integral hasta que esté dorado y crujiente.<br>-Montar Tostadas: Unta generosamente la mantequilla de cacahuete sobre las tostadas. <br>-Añadir Toppings: Coloca las rodajas de plátano por encima. Espolvorea las semillas de lino molidas. <br>-Servir: Sirve inmediatamente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038763/rec75_xob1nk.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 1.5-2 mg (mantequilla de cacahuete, semillas de lino, pan).<br>-Calorías: 380-430 kcal<br>-Proteínas: 12-15g<br>-Grasas: 18-22g<br>-Carbohidratos: 40-45g'
+    },
+    Receta76: {
+        nombre: 'Guiso de Ternera con Lentejas y Verduras de Raíz',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-300g de ternera para guisar, cortada en cubos<br>-1 taza de lentejas pardinas (secas), remojadas por 30 min y escurridas<br>-1 cebolla mediana, picada<br>-2 zanahorias grandes, peladas y picadas en cubos<br>-1 chirivía o nabo, pelada y picada en cubos (opcional)<br>-2 dientes de ajo, picados<br>-4 tazas de caldo de res bajo en sodio<br>-1 cucharadita de tomillo seco<br>-1 cucharada de aceite de oliva<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar.',
+        preparacion: '-Dorar Ternera: En una olla grande de fondo grueso a fuego medio-alto, calienta el aceite. Sazona la ternera con sal y pimienta y dórala en tandas hasta que esté sellada. Retira la carne y reserva.<br>-Sofrito: Reduce el fuego a medio y añade la cebolla a la olla. Sofríe hasta que esté transparente. Agrega el ajo y cocina por 1 minuto más.<br>-Añadir Ingredientes: Incorpora las zanahorias, la chirivía (si usas), las lentejas remojadas, el tomillo y la ternera. Vierte el caldo de res. Lleva a ebullición.<br>-Cocción Lenta: Reduce el fuego a bajo, tapa y cocina a fuego lento durante 1.5 a 2 horas, o hasta que la ternera y las lentejas estén muy tiernas. Revuelve ocasionalmente.<br>-Servir: Sazona con sal y pimienta al gusto. Sirve caliente, decorado con perejil fresco.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038763/rec76_qbwa8u.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 4-5 mg (ternera).<br>-Hierro no hemo: Aproximadamente 3-4 mg (lentejas, verduras de raíz).<br>-Vitamina C: Aproximadamente 20-30 mg (zanahorias, chirivía).<br>-Calorías: 500-550 kcal<br>-Proteínas: 40-45g<br>-Grasas: 20-25g<br>-Carbohidratos: 35-40g'
+    },
+    Receta77: {
+        nombre: 'Mollejitas Salteadas con Espinacas y Limón',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C', 'Proteínas'],
+        ingredientes: '-500g de mollejas de pollo, limpias y cocidas<br>-2 cucharadas de aceite de oliva<br>-1 cebolla roja pequeña, finamente picada<br>-2 dientes de ajo, picados<br>-4 tazas de espinacas frescas<br>-Jugo de 1 limón<br>-Sal y pimienta al gusto<br>-Perejil fresco picado para decorar',
+        preparacion: '-Cocinar Mollejas: Si las mollejas están crudas, cocínalas en agua hirviendo con sal hasta que estén tiernas (aproximadamente 30-40 minutos). Escúrrelas y córtalas en trozos pequeños.<br>-Saltear: Calienta el aceite en una sartén grande a fuego medio-alto. Agrega la cebolla y el ajo, sofríe por 3 minutos hasta que estén fragantes.<br>-Añadir Mollejas y Espinacas: Incorpora las mollejas cocidas y saltea por 5 minutos, hasta que estén ligeramente doradas. Añade las espinacas frescas y cocina hasta que se ablanden.<br>-Finalizar: Retira del fuego, exprime el jugo de limón por encima, sazona con sal y pimienta. Decora con perejil fresco.<br>-Servir: Disfruta caliente, solo o acompañado de una porción de arroz integral.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038763/rec77_gvdmsc.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 8-12 mg<br>-Vitamina C: Aproximadamente 30-40 mg (limón, espinacas)<br>-Calorías: 300-350 kcal<br>-Proteínas: 25-30g<br>-Grasas: 15-20g<br>-Carbohidratos: 5-10g'
+    },
+    Receta78: {
+        nombre: 'Salteado de Sardinas con Tomate y Perejil',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-1 lata (aprox. 120g) de sardinas en aceite de oliva (escurrido)<br>-1 tomate grande, picado en cubos<br>-2 dientes de ajo, picados<br>-2 cucharadas de perejil fresco picado<br>-1 cucharada de aceite de oliva virgen extra (adicional al de la lata)<br>-Sal y pimienta al gusto<br>-Opcional: tostadas de pan integral para acompañar.',
+        preparacion: '-Saltear Base: En una sartén a fuego medio, calienta el aceite de oliva. Añade el ajo y cocina por 30 segundos hasta que esté fragante. Incorpora el tomate picado y cocina por 5-7 minutos hasta que el tomate se ablande y suelte sus jugos. <br>-Añadir Sardinas y Perejil: Agrega las sardinas escurridas a la sartén y desmenúzalas ligeramente con una cuchara. Cocina por 2-3 minutos para que se calienten. Retira del fuego y añade el perejil fresco picado. <br>-Servir: Sazona con sal y pimienta. Sirve caliente, opcionalmente con tostadas de pan integral.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038764/rec78_yggxjv.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 2-3 mg (sardinas).<br>-Vitamina C: Aproximadamente 20-30 mg (tomate, perejil).<br>-Calorías: 300-350 kcal<br>-Proteínas: 20-25g<br>-Grasas: 20-25g<br>-Carbohidratos: 5-10g'
+    },
+    Receta79: {
+        nombre: 'Arroz Chaufa de Sangrecita',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Proteínas', 'Carbohidratos'],
+        ingredientes: '-2 tazas de arroz cocido, frío (idealmente de un día anterior)<br>-300g de sangrecita de pollo o cerdo, cocida y picada finamente<br>-2 cucharadas de aceite vegetal<br>-1/2 cebolla china (cebollita de verdeo), picada (parte blanca y verde separadas)<br>-1 pimiento rojo pequeño, picado en cubitos<br>-2 huevos, batidos<br>-2 cucharadas de sillao (salsa de soja)<br>-1 cucharadita de aceite de sésamo<br>-Sal y pimienta al gusto',
+        preparacion: '-Preparar Huevos: Calienta 1 cucharadita de aceite en un wok o sartén grande. Vierte los huevos batidos y cocina haciendo una tortilla fina. Retira, enrolla y corta en tiras finas. Reserva.<br>-Saltear Aromáticos: En el mismo wok con 1 cucharada de aceite, agrega la parte blanca de la cebolla china y el pimiento rojo. Saltea por 2 minutos hasta que estén ligeramente tiernos.<br>-Incorporar Sangrecita: Añade la sangrecita picada y saltea por 3-5 minutos, rompiéndola con una cuchara, hasta que esté bien cocida y suelta.<br>-Añadir Arroz: Agrega el arroz frío al wok. Mezcla bien, revolviendo constantemente para que el arroz se caliente y se integre con los demás ingredientes. Cocina por 5 minutos.<br>-Sazonar y Finalizar: Vierte el sillao y el aceite de sésamo. Incorpora las tiras de huevo y la parte verde de la cebolla china. Mezcla todo bien. Sazona con sal y pimienta al gusto.<br>-Servir: Sirve caliente.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec79_oxjlng.webp', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 18-22 mg<br>-Calorías: 500-550 kcal<br>-Proteínas: 25-30g<br>-Grasas: 15-20g<br>-Carbohidratos: 60-70g'
+    },
+    Receta80: {
+        nombre: 'Batido de Mango, Naranja y Jengibre',
+        tipo: ['Desayuno'],
+        nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+        ingredientes: '-1 taza de mango congelado en trozos<br>-1 naranja grande, pelada y sin semillas<br>-1 trozo pequeño de jengibre fresco (aprox. 1 cm), pelado<br>-1/2 taza de agua o jugo de naranja natural<br>-Opcional: Miel o sirope de arce al gusto.',
+        preparacion: '-Preparar Ingredientes: Pela la naranja y el jengibre. <br>-Licuar: Coloca todos los ingredientes en una licuadora: mango, naranja, jengibre y el agua/jugo. <br>-Mezclar: Licúa a alta velocidad hasta obtener una mezcla suave. Si la consistencia es muy espesa, añade un poco más de líquido. <br>-Servir: Sirve inmediatamente para aprovechar al máximo los nutrientes.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec80_d87y3r.webp',
+        informacion: 'Información Nutricional:<br>-Hierro no hemo: Aproximadamente 0.5-1 mg (jengibre).<br>-Vitamina C: Muy alto contenido (mango, naranja) - más de 100 mg.<br>-Calorías: 180-220 kcal<br>-Proteínas: 2-4g<br>-Grasas: 0-1g<br>-Carbohidratos: 40-50g'
+    },
+    Receta81: {
+        nombre: 'Pescado Blanco al Vapor con Espinacas y Limón',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C'],
+        ingredientes: '-2 filetes de pescado blanco (tilapia, merluza, aprox. 150g cada uno)<br>-2 tazas de espinacas frescas<br>-Jugo de 1/2 limón<br>-Rodajas de limón para decorar<br>-Sal y pimienta al gusto.',
+        preparacion: '-Preparar Vaporera: Calienta agua en una olla o vaporera. <br>-Cocinar Pescado y Espinacas: Coloca los filetes de pescado en la cesta de la vaporera. Sazona con sal y pimienta. Alrededor del pescado, distribuye las espinacas frescas. Cubre y cocina al vapor durante 8-12 minutos, o hasta que el pescado esté cocido y se desmenuce fácilmente con un tenedor, y las espinacas se hayan marchitado. <br>-Servir: Sirve el pescado y las espinacas inmediatamente. Rocía con el jugo de limón y decora con rodajas de limón.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec81_l0cqji.jpg',
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 0.5-1 mg (pescado blanco).<br>-Vitamina C: Aproximadamente 20-30 mg (espinacas, limón).<br>-Calorías: 250-300 kcal<br>-Proteínas: 30-35g<br>-Grasas: 5-8g<br>-Carbohidratos: 5-10g'
+    },
+    Receta82: {
+        nombre: 'Guiso de Mollejas y Arvejas con Hierbabuena',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Proteínas', 'Fibra'],
+        ingredientes: '-500g de mollejas de pollo o res, cocidas y cortadas en trozos<br>-1 cucharada de aceite vegetal<br>-1 cebolla mediana, picada<br>-2 dientes de ajo, picados<br>-1/2 taza de arvejas frescas o congeladas<br>-1 papa mediana, pelada y cortada en cubos<br>-1/2 taza de caldo de pollo o agua<br>-2 cucharadas de pasta de tomate<br>-1/4 taza de hierbabuena fresca picada<br>-Sal y pimienta al gusto',
+        preparacion: '-Sofríe Aromáticos: Calienta el aceite en una olla a fuego medio. Agrega la cebolla y el ajo, sofríe por 5 minutos hasta que la cebolla esté transparente.<br>-Añadir Mollejas y Sazón: Incorpora las mollejas cocidas a la olla y cocina por 5 minutos, mezclando para que se doren ligeramente. Agrega la pasta de tomate y cocina por 1 minuto más.<br>-Cocer Guiso: Vierte el caldo de pollo, añade las arvejas y los cubos de papa. Lleva a ebullición, luego reduce el fuego, tapa y cocina a fuego lento por 15-20 minutos, o hasta que las papas estén tiernas y la salsa haya espesado.<br>-Finalizar: Retira del fuego. Incorpora la hierbabuena picada y mezcla bien. Sazona con sal y pimienta al gusto.<br>-Servir: Disfruta caliente con arroz blanco o solo.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec82_xttmzk.webp', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 8-12 mg<br>-Calorías: 380-420 kcal<br>-Proteínas: 28-32g<br>-Grasas: 15-18g<br>-Carbohidratos: 20-25g'
+    },
+    Receta83: {
+        nombre: 'Salteado de Corazón con Verduras Verdes y Quinoa',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina C', 'Proteínas'],
+        ingredientes: '-300g de corazón de res, cortado en tiras finas<br>-1 cucharada de aceite vegetal<br>-1 pimiento verde, cortado en tiras<br>-1 taza de brócoli o espárragos, picados<br>-1/2 cebolla roja, en juliana<br>-2 dientes de ajo, picados<br>-2 cucharadas de salsa de soja<br>-1 cucharadita de jengibre fresco rallado<br>-Jugo de 1/2 limón<br>-Sal y pimienta al gusto<br>-1 taza de quinoa cocida para acompañar',
+        preparacion: '-Preparar Corazón: Sazona las tiras de corazón con sal y pimienta.<br>-Saltear Corazón: Calienta el aceite en un wok o sartén grande a fuego alto. Agrega las tiras de corazón y saltea por 3-5 minutos hasta que estén doradas y cocidas al punto deseado. Retira y reserva.<br>-Saltear Verduras: En la misma sartén, agrega el pimiento verde, el brócoli/espárragos, la cebolla roja y el ajo. Saltea por 5-7 minutos hasta que las verduras estén tiernas pero aún crujientes.<br>-Unir y Sazonar: Regresa el corazón a la sartén con las verduras. Añade la salsa de soja y el jengibre rallado. Mezcla bien y cocina por 1 minuto más. Retira del fuego y exprime el jugo de limón.<br>-Servir: Sirve caliente acompañado de quinoa cocida.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec83_nbj3c3.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 10-15 mg<br>-Vitamina C: Aproximadamente 70-90 mg (pimiento verde, brócoli, limón)<br>-Calorías: 420-480 kcal<br>-Proteínas: 30-35g<br>-Grasas: 15-20g<br>-Carbohidratos: 30-35g'
+    },
+    Receta84: {
+        nombre: 'Hígado Encebollado con Ají Amarillo y Papa',
+        tipo: ['Almuerzo', 'Cena'],
+        nutrientes: ['Hierro Hemo', 'Vitamina A', 'Vitamina C'],
+        ingredientes: '-400g de hígado de res, cortado en filetes delgados<br>-2 cucharadas de aceite vegetal<br>-2 cebollas rojas grandes, cortadas en juliana gruesa<br>-1 ají amarillo fresco, sin venas ni semillas, cortado en tiras (opcional, para sabor y vitamina C)<br>-2 papas medianas, peladas y cortadas en bastones para freír o cocinar<br>-1 cucharada de ajo molido<br>-2 cucharadas de vinagre tinto<br>-1 cucharada de perejil picado<br>-Sal y pimienta al gusto',
+        preparacion: '-Preparar Papas: Si vas a freír las papas, hazlo primero hasta que estén doradas y crujientes. Si las vas a cocinar, hazlo al vapor o hervidas hasta que estén tiernas. Reserva.<br>-Sazonar Hígado: Sazona los filetes de hígado con sal, pimienta y ajo molido.<br>-Saltear Hígado y Verduras: Calienta el aceite en una sartén grande a fuego alto. Dora los filetes de hígado rápidamente por ambos lados (1-2 minutos por lado) para sellar. Retira y reserva. En la misma sartén, agrega la cebolla y el ají amarillo. Saltea por 5-7 minutos hasta que la cebolla esté tierna y ligeramente caramelizada.<br>-Unir y Servir: Regresa el hígado a la sartén con la cebolla y el ají. Vierte el vinagre tinto y cocina por 1-2 minutos más, revolviendo suavemente. Prueba y ajusta la sazón. Espolvorea con perejil picado. Sirve caliente acompañado de las papas.',
+        imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec84_yrkaet.jpg', 
+        informacion: 'Información Nutricional:<br>-Hierro hemo: Aproximadamente 12-18 mg<br>-Vitamina A: Muy alta<br>-Vitamina C: Aproximadamente 40-60 mg (ají amarillo, cebolla)<br>-Calorías: 450-500 kcal<br>-Proteínas: 30-35g<br>-Grasas: 20-25g<br>-Carbohidratos: 25-30g'
+    },
+    Receta85: {
+    nombre: 'Smoothie Verde Antianémico (Espinaca, Kiwi, Uvas)',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-2 tazas de espinacas<br>-1/2 kiwi pelado<br>-1/2 taza de uvas verdes<br>-1 vaso de agua o bebida vegetal<br>-Hielo al gusto',
+    preparacion: '-En una licuadora mezcla todos los ingredientes hasta obtener consistencia cremosa.<br>-Sirve inmediatamente para preservar nutrientes.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753038762/rec87_vycbe8.webp',
+    informacion: 'Alto aporte de vitamina C y hierro no hemo, favorece la absorción.'
+    },
+    Receta86: { /*me quedo aqui :ccc*/
+    nombre: 'Smoothie Tropical Rico en Hierro',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-1 taza de piña<br>-1/2 aguacate<br>-1 taza de espinacas<br>-1 cucharada de semillas de cáñamo<br>-1 vaso de agua',
+    preparacion: '-Licúa todo hasta suavizar. Sirve frío.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039931/rec86_dqom3j.jpg',
+    informacion: 'Combinación que potencia el hierro gracias a la vitamina C.'
+    },
+    Receta87: {
+    nombre: 'Smoothie Naranja‑Verde con Chía y Yogur',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-1 naranja (jugo)<br>-1 taza de espinacas<br>-1/2 taza de kale<br>-2 cdas de chía<br>-1/2 taza de yogur natural',
+    preparacion: '-Extrae jugo de naranja, licúa con el resto hasta integrar y disfruta.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039930/rec87_fhkjgb.jpg',
+    informacion: 'Yogur fermentado y cítricos mejoran la absorción.'
+    },
+    Receta88: {
+    nombre: 'Smoothie Tropical con Piña, Kale y Semillas',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-1/2 taza de piña<br>-1 taza espinaca + kale<br>-1 banana congelada<br>-2 cdas de semillas de chía o cáñamo<br>-1 vaso de agua',
+    preparacion: '-Licúa todo y sirve al instante.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039930/rec88_laogjx.webp',
+    informacion: 'Estilo tropical con hierro vegetal y proteínas.'
+    },
+    Receta89: {
+    nombre: 'Batido de Avena, Plátano y Espinaca',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo'],
+    ingredientes: '-1 plátano<br>-1 taza espinacas<br>-1/2 taza de avena cocida<br>-1 vaso de leche vegetal',
+    preparacion: '-Mezclar todo y beber frío o tibio.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039931/rec89_plqgxe.jpg',
+    informacion: 'Espinaca y avena aportan hierro y fibra, plátano refuerza vitaminas del grupo B.'
+    }, 
+    Receta90: {
+    nombre: 'Jugo de Remolacha, Zanahoria y Naranja',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-150 g de remolacha<br>-1 zanahoria<br>-2 naranjas<br>-Miel al gusto (opcional)',
+    preparacion: '-Extrae jugos o licúa y cuela. Bebe al momento.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039930/rec90_gz9nnp.webp',
+    informacion: 'Clásico antianémico por su hierro, folato y vitamina C.'
+    },
+    Receta91: {
+    nombre: 'Jugo de Piña y Perejil',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-2 rebanadas de piña<br>-Un puñado de perejil<br>-1 vaso de agua',
+    preparacion: '-Licúa y sirve inmediatamente.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039929/rec91_hmx7xq.avif',
+    informacion: 'Perejil aporta hierro y piña vitamina C para mejor absorción.'
+    },
+    Receta92: {
+    nombre: 'Brownies de Cacao y Frijoles Negros',
+    tipo: ['Cena'],
+    nutrientes: ['Hierro No Hemo'],
+    ingredientes: '-1 lata (400g) de frijoles negros cocidos y escurridos<br>-1/2 taza de cacao en polvo sin azúcar<br>-1/2 taza de endulzante (azúcar de coco, eritritol, etc.)<br>-1/4 taza de aceite de coco derretido<br>-2 huevos grandes<br>-1 cucharadita de extracto de vainilla<br>-1/2 cucharadita de polvo para hornear<br>-1/4 cucharadita de sal<br>-Chispas de chocolate negro (opcional)',
+    preparacion: '-Precalentar el horno a 175°C (350°F) y engrasar un molde cuadrado.<br>-En un procesador de alimentos, combinar los frijoles negros, cacao, endulzante, aceite de coco, huevos, vainilla, polvo para hornear y sal. Procesar hasta obtener una mezcla suave.<br>-Incorporar las chispas de chocolate si se usan.<br>-Verter la mezcla en el molde preparado y hornear por 20-25 minutos o hasta que al insertar un palillo, este salga ligeramente húmedo.<br>-Dejar enfriar antes de cortar y servir.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039931/rec92_qut6in.jpg',
+    informacion: '-Hierro no hemo: Aproximadamente 2-3 mg (frijoles negros, cacao).<br>-Calorías: 200-250 kcal<br>-Proteínas: 5-7g<br>-Grasas: 10-12g<br>-Carbohidratos: 25-30g'
+},
+Receta93: {
+    nombre: 'Muffins de Avena y Zanahoria con Pasas',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-1 1/2 tazas de harina de avena<br>-1/2 taza de avena en hojuelas<br>-1/2 taza de zanahoria rallada<br>-1/4 taza de pasas<br>-1/2 taza de endulzante (miel, jarabe de arce, etc.)<br>-1 huevo grande<br>-1/2 taza de leche (o bebida vegetal)<br>-1/4 taza de aceite vegetal<br>-1 cucharadita de polvo para hornear<br>-1/2 cucharadita de canela en polvo<br>-Pizca de nuez moscada<br>-Pizca de sal',
+    preparacion: '-Precalentar el horno a 180°C (350°F) y preparar un molde para muffins con capacillos.<br>-En un tazón grande, mezclar la harina de avena, avena en hojuelas, zanahoria rallada, pasas, polvo para hornear, canela, nuez moscada y sal.<br>-En otro tazón, batir el endulzante, huevo, leche y aceite.<br>-Verter los ingredientes húmedos sobre los secos y mezclar hasta combinar, sin batir en exceso.<br>-Llenar los capacillos de muffins hasta 2/3 de su capacidad.<br>-Hornear por 20-25 minutos o hasta que estén dorados y un palillo salga limpio.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039930/rec93_jkjl41.jpg',
+    informacion: '-Hierro no hemo: Aproximadamente 1.5-2 mg (avena, pasas).<br>-Vitamina C: Aproximadamente 5-10 mg (zanahoria).<br>-Calorías: 180-220 kcal<br>-Proteínas: 4-6g<br>-Grasas: 8-10g<br>-Carbohidratos: 25-30g'
+},
+Receta94: {
+    nombre: 'Pudín de Chía con Frutos Rojos',
+    tipo: ['Desayuno', 'Cena'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-3 cucharadas de semillas de chía<br>-1 taza de leche (o bebida vegetal)<br>-1 cucharadita de endulzante (opcional)<br>-1/2 taza de frutos rojos frescos o congelados (fresas, frambuesas, arándanos)<br>-Opcional: 1/4 cucharadita de extracto de vainilla',
+    preparacion: '-En un frasco o recipiente, combinar las semillas de chía, leche, endulzante y vainilla (si se usa).<br>-Mezclar bien para evitar grumos. Tapar y refrigerar por al menos 4 horas o idealmente toda la noche, revolviendo a la mitad del tiempo si es posible.<br>-Antes de servir, agregar los frutos rojos por encima.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039928/rec94_sdj3sj.webp',
+    informacion: '-Hierro no hemo: Aproximadamente 1-1.5 mg (semillas de chía).<br>-Vitamina C: Aproximadamente 30-50 mg (frutos rojos).<br>-Calorías: 150-180 kcal<br>-Proteínas: 5-7g<br>-Grasas: 8-10g<br>-Carbohidratos: 15-20g'
+},
+Receta95: {
+    nombre: 'Waffles Proteicos de Espinacas y Plátano',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-1 taza de espinacas frescas<br>-1 plátano maduro<br>-1/2 taza de claras de huevo (o 2 huevos enteros)<br>-1/4 taza de harina de avena<br>-1/2 cucharadita de polvo para hornear<br>-Pizca de canela (opcional)<br>-Aceite en spray o mantequilla para la waflera',
+    preparacion: '-En una licuadora, combinar las espinacas frescas, el plátano, las claras de huevo (o huevos enteros), la harina de avena, el polvo para hornear y la canela (si se usa). Licuar hasta obtener una mezcla homogénea y sin grumos.<br>-Precalentar la waflera y engrasarla ligeramente con aceite en spray o mantequilla.<br>-Verter la cantidad adecuada de masa en la waflera y cocinar según las instrucciones de tu waflera, hasta que los waffles estén dorados y cocidos por dentro.<br>-Servir calientes, se pueden acompañar con frutos rojos o un poco de miel.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039928/rec95_dkoxe9.webp',
+    informacion: '-Hierro no hemo: Aproximadamente 1.5-2 mg (espinacas, avena).<br>-Vitamina C: Aproximadamente 10-15 mg (espinacas, plátano).<br>-Calorías: 200-250 kcal (por porción)<br>-Proteínas: 15-20g<br>-Grasas: 5-8g<br>-Carbohidratos: 25-30g'
+},
+Receta96: {
+    nombre: 'Panqueques Proteicos de Remolacha y Cacao',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-1/2 taza de remolacha cocida y picada (aproximadamente 1 remolacha pequeña)<br>-1/2 taza de claras de huevo (o 2 huevos enteros)<br>-1/4 taza de harina de avena<br>-1 cucharada de cacao en polvo sin azúcar<br>-1/2 cucharadita de polvo para hornear<br>-1/4 taza de leche (o bebida vegetal, si es necesario para la consistencia)<br>-Endulzante al gusto (stevia, eritritol, etc.)<br>-Aceite en spray o mantequilla para la sartén',
+    preparacion: '-En una licuadora, combinar la remolacha cocida, las claras de huevo (o huevos enteros), la harina de avena, el cacao en polvo, el polvo para hornear, la leche (si es necesario) y el endulzante. Licuar hasta obtener una mezcla suave y homogénea.<br>-Calentar una sartén antiadherente a fuego medio y engrasarla ligeramente.<br>-Verter porciones de la masa para formar los panqueques. Cocinar por 2-3 minutos por cada lado, o hasta que aparezcan burbujas en la superficie y los bordes estén firmes.<br>-Voltear y cocinar hasta que estén dorados.<br>-Servir calientes, se pueden acompañar con yogur griego y frutos rojos.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039931/rec96_zylqtz.jpg',
+    informacion: '-Hierro no hemo: Aproximadamente 1-1.5 mg (remolacha, cacao, avena).<br>-Vitamina C: Aproximadamente 15-20 mg (remolacha).<br>-Calorías: 180-220 kcal (por porción)<br>-Proteínas: 12-18g<br>-Grasas: 4-6g<br>-Carbohidratos: 20-25g'
+},
+Receta97: {
+    nombre: 'Helado Casero de Banana y Cacao',
+    tipo: ['Cena'],
+    nutrientes: ['Hierro No Hemo'],
+    ingredientes: '-3 plátanos maduros, congelados y cortados en rodajas<br>-2 cucharadas de cacao en polvo sin azúcar<br>-1-2 cucharadas de leche (o bebida vegetal, opcional, para ayudar a licuar)',
+    preparacion: '-Colocar las rodajas de plátano congelado y el cacao en polvo en un procesador de alimentos o licuadora de alta potencia.<br>-Procesar, raspando los lados según sea necesario. Al principio parecerá desmenuzado, pero con la paciencia y si es necesario, añadir una cucharada de leche, se irá volviendo cremoso como helado.<br>-Continuar procesando hasta obtener una consistencia suave y cremosa.<br>-Servir inmediatamente o congelar por un corto tiempo para una consistencia más firme.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039932/rec97_mtjh4l.jpg',
+    informacion: '-Hierro no hemo: Aproximadamente 0.5-1 mg (cacao).<br>-Calorías: 150-180 kcal<br>-Proteínas: 2-3g<br>-Grasas: 1-2g<br>-Carbohidratos: 35-40g'
+},
+Receta98: {
+    nombre: 'Barritas Energéticas de Avena y Chocolate',
+    tipo: ['Desayuno'],
+    nutrientes: ['Hierro No Hemo'],
+    ingredientes: '-1 taza de avena en hojuelas<br>-1/2 taza de mantequilla de maní natural<br>-1/4 taza de miel o jarabe de arce<br>-1/4 taza de chispas de chocolate negro<br>-Opcional: 1 cucharada de semillas de chía o lino',
+    preparacion: '-En un tazón grande, combinar la avena, la mantequilla de maní, la miel (o jarabe de arce) y las semillas de chía/lino (si se usan). Mezclar bien hasta que todos los ingredientes estén integrados.<br>-Si la mezcla está muy seca, añadir un poco más de miel o mantequilla de maní. Si está muy pegajosa, añadir un poco más de avena.<br>-Incorporar las chispas de chocolate.<br>-Prensa la mezcla firmemente en un molde cuadrado forrado con papel pergamino.<br>-Refrigerar por al menos 1 hora antes de cortar en barras.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039928/rec98_wnzgeh.jpg',
+    informacion: '-Hierro no hemo: Aproximadamente 1.5-2.5 mg (avena, chocolate).<br>-Calorías: 200-250 kcal (por barra)<br>-Proteínas: 6-8g<br>-Grasas: 10-12g<br>-Carbohidratos: 25-30g'
+},
+Receta99: {
+    nombre: 'Cheesecake de Ricotta con Frutos del Bosque',
+    tipo: ['Cena'],
+    nutrientes: ['Hierro No Hemo', 'Vitamina C'],
+    ingredientes: '-250g de queso ricotta light<br>-1 huevo grande<br>-2 cucharadas de endulzante (eritritol, stevia, etc.)<br>-1 cucharadita de extracto de vainilla<br>-1/2 taza de frutos del bosque frescos (frambuesas, arándanos, moras)<br>-Base de galleta integral triturada (opcional, para una porción individual)',
+    preparacion: '-Precalentar el horno a 160°C (325°F).<br>-En un tazón, batir el queso ricotta con el huevo, el endulzante y el extracto de vainilla hasta obtener una mezcla suave.<br>-Si se usa base de galleta, colocar una pequeña porción en el fondo de un ramequín individual.<br>-Verter la mezcla de ricotta sobre la base (o directamente en el ramequín si no se usa base).<br>-Hornear por 25-30 minutos, o hasta que el centro esté firme. Dejar enfriar completamente.<br>-Refrigerar por al menos 2 horas antes de servir.<br>-Al momento de servir, decorar con los frutos del bosque frescos.',
+    imagen:'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039928/rec99_bphdzf.jpg',
+    informacion: '-Hierro no hemo: Aproximadamente 0.3-0.5 mg (ricotta, frutos del bosque).<br>-Vitamina C: Aproximadamente 20-40 mg (frutos del bosque).<br>-Calorías: 180-220 kcal (sin base de galleta)<br>-Proteínas: 12-15g<br>-Grasas: 8-10g<br>-Carbohidratos: 10-15g'
+},
+    Receta100: {
+    nombre: 'Infusión de Ortiga y Limón',
+    tipo: ['Desayuno','Cena'],
+    nutrientes: ['Vitamina C'],
+    ingredientes: '-1 cda de hojas secas de ortiga<br>-250 ml de agua hirviendo<br>-Rodajas de limón',
+    preparacion: '-Hervir agua, reposar con ortiga 10 min, colar y añadir limón.',
+    imagen: 'https://res.cloudinary.com/dqvcjwlrl/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1753039928/rec100_waemy5.jpg',
+    informacion: 'Ortiga y limón: hierro + vitamina C que ayuda a fijarlo.'
+    },
+};
+
+let filtrosSeleccionados = {
+    tipos: new Set(),
+    nutrientes: new Set()
+};
+const modalReceta = document.getElementById('modal');
+const preparacionContent = document.getElementById('preparacion-content');
+const infoNutriContent = document.getElementById('infoNutri-content');
+
+function mostrarRecetas(listadoRecetas) {
+    document.getElementById('resultados').innerHTML = '';
+    for (const clave in listadoRecetas) {
+        const tarjeta = document.createElement('div');
+        tarjeta.classList.add('tarjeta-receta');
+        tarjeta.innerHTML = `
+            <img src="${listadoRecetas[clave].imagen}">
+            <h3>" ${listadoRecetas[clave].nombre} "</h3>
+            <h4>- ${listadoRecetas[clave].tipo.join(', ')}</h4>
+            <h4>- ${listadoRecetas[clave].nutrientes.join(', ')}</h4>
+            <button class="btn-info-receta" onclick="Preparacion('${clave}')" data-receta-key="${clave}">Preparación</button>
+            <button class="btn-nu-receta" onclick="InfoNutricional('${clave}')" data-receta-key="${clave}">Valor Nutricional</button>`;
+
+        document.getElementById('resultados').appendChild(tarjeta);
+    }
+}
+
+function Preparacion(claveReceta) {
+    infoNutriContent.style.display = 'none';
+    preparacionContent.style.display = 'block';
+    preparacionContent.innerHTML = `
+        <span class="close-button">&times;</span>
+        <h2>${recetas[claveReceta].nombre}</h2>
+        <img src="${recetas[claveReceta].imagen}" alt="${recetas[claveReceta].nombre}" class="modal-imagen">
+        <p><strong>Tipo:</strong> ${recetas[claveReceta].tipo.join(', ')}</p>
+        <p><strong>Nutrientes:</strong> ${recetas[claveReceta].nutrientes.join(', ')}</p>
+        <h4>Ingredientes:</h4><p>${recetas[claveReceta].ingredientes}</p>
+        <h4>Preparación:</h4><p>${recetas[claveReceta].preparacion}</p>
+         `;
+    modalReceta.style.display = 'block';
+
+    preparacionContent.querySelector('.close-button').onclick = () => {
+        modalReceta.style.display = 'none';
+    };
+}
+
+function InfoNutricional(claveReceta) {
+    preparacionContent.style.display = 'none';
+    infoNutriContent.style.display = 'block';
+    infoNutriContent.innerHTML = `
+        <span class="close-button">&times;</span>
+        <h2>${recetas[claveReceta].nombre}</h2>
+        <h4>Valor Nutricional:</h4><p>${recetas[claveReceta].informacion}</p>
+    `;
+    modalReceta.style.display = 'block';
+
+    infoNutriContent.querySelector('.close-button').onclick = () => {
+        modalReceta.style.display = 'none';
+    };
+}
+
+window.addEventListener('click', (evento) => {
+    if (evento.target === modalReceta) {
+        modalReceta.style.display = 'none';}
+});
+
+function aplicarFiltros() {
+    const { tipos, nutrientes } = filtrosSeleccionados;
+    if (tipos.size === 0 && nutrientes.size === 0) {
+        mostrarRecetas(recetas);
+        return;}
+
+    const recetasFiltradas = {};
+    for (const clave in recetas) {
+        const receta = recetas[clave];
+        let coincide = true;
+
+        if (tipos.size > 0) {
+            const hayTipo = [...tipos].some(t => receta.tipo.includes(t));
+            if (!hayTipo) coincide = false;}
+
+        if (nutrientes.size > 0) {
+            const hayNutriente = [...nutrientes].some(n => receta.nutrientes.includes(n));
+            if (!hayNutriente) coincide = false;}
+
+        if (coincide) {
+            recetasFiltradas[clave] = receta;}
+    }
+    mostrarRecetas(recetasFiltradas);
+}
+
+document.querySelectorAll('.seccion-filtros button[data-tipo-filtro]').forEach(boton => {
+    boton.addEventListener('click', () => {
+        let conjunto; 
+        if (boton.dataset.tipoFiltro === 'nutrientes') {
+            conjunto = filtrosSeleccionados.nutrientes;
+        } else {
+            conjunto = filtrosSeleccionados.tipos;
+        }
+
+        if (conjunto.has(boton.dataset.valorFiltro)) {
+            conjunto.delete(boton.dataset.valorFiltro);
+            boton.classList.remove('activo');
+        } else {
+            conjunto.add(boton.dataset.valorFiltro);
+            boton.classList.add('activo');
+        }
+    });
+});
+document.addEventListener('DOMContentLoaded', () => {mostrarRecetas(recetas);
+});
+</script>
+
+  
+</body>
+</html>

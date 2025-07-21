@@ -1,0 +1,213 @@
+ /* =========================
+           FUERZA ROJA - CSS PARA anemia_1.html
+           ========================= */
+
+        /* ======= VARIABLES Y BASE ======= */
+        :root {
+            --rojo-principal: #d90429;
+            --rojo-oscuro: #a30015;
+            --beige: #f5e9da;
+            --blanco: #fff;
+            --gris-oscuro: #2d2d2d;
+            --shadow: 0 8px 32px rgba(217,4,41,0.13);
+        }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #f5e9da 60%, #d90429 100%);
+            font-family: 'Poppins', Arial, sans-serif;
+            color: var(--gris-oscuro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* ======= CONTENEDOR PRINCIPAL ======= */
+        .main-wrapper {
+            width:100vw; min-height:100vh;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+        }
+        .intro-box {
+            max-width: 480px; width: 98vw; margin: 40px 0;
+        }
+        .intro-header {
+            text-align:center; margin-bottom: 18px;
+        }
+        .intro-header .icon {
+            font-size:3.2em; display:inline-block; margin-bottom:8px;
+        }
+        .intro-header h1 {
+            font-size:2.3em; color:#d90429; font-weight:900; margin:0 0 8px 0; letter-spacing:1px;
+        }
+        .intro-header .desc {
+            font-size:1.1em; color:#a30015; font-weight:600; margin-bottom:10px;
+        }
+        /* ======= CALCULADORA ======= */
+        .container {
+            background: rgba(255,255,255,0.18);
+            border-radius: 2.5em;
+            box-shadow: var(--shadow);
+            padding: 38px 32px 32px 32px;
+            max-width: 370px;
+            width: 95vw;
+            margin: 40px 0;
+            position: relative;
+            animation: fadeIn 1s;
+            backdrop-filter: blur(8px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .japan-deco {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 60% 40%, #f5e9da 60%, #d90429 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 24px #d9042920;
+            z-index: 2;
+            border: 3px solid #fff6f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .japan-deco {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle at 60% 40%, #f5e9da 60%, #d90429 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 24px #d9042920;
+    z-index: 2;
+    border: 3px solid #fff6f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+        h2 {
+            font-family: 'Poppins', Arial, sans-serif;
+            font-size: 2.1rem;
+            color: var(--rojo-principal);
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            text-align: center;
+            font-weight: 900;
+        }
+        label {
+            display: block;
+            margin-top: 18px;
+            font-size: 1.08rem;
+            letter-spacing: 0.5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 7px;
+            border: 1.5px solid var(--rojo-principal);
+            border-radius: 1em;
+            font-size: 1rem;
+            background: var(--blanco);
+            color: var(--gris-oscuro);
+            outline: none;
+            transition: border 0.2s;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        input:focus, select:focus {
+            border: 1.5px solid var(--rojo-oscuro);
+        }
+        button {
+            margin-top: 28px;
+            width: 100%;
+            padding: 1em;
+            background: linear-gradient(90deg, var(--rojo-principal), var(--rojo-oscuro));
+            color: #fff;
+            border: none;
+            border-radius: 2em;
+            font-size: 1.15rem;
+            font-family: 'Poppins', Arial, sans-serif;
+            font-weight: 900;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 16px #d9042920;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, var(--rojo-oscuro), var(--rojo-principal));
+            transform: translateY(-2px) scale(1.03);
+        }
+        /* ======= RESULTADO ======= */
+        .result {
+            margin-top: 26px;
+            padding: 18px 12px 10px 12px;
+            border-radius: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.15rem;
+            border: 2px solid var(--rojo-principal);
+            box-shadow: 0 2px 12px rgba(217, 4, 41, 0.10);
+            background: var(--blanco);
+            color: var(--gris-oscuro);
+            display: none;
+            animation: fadeInResult 0.7s;
+            position: relative;
+        }
+        @keyframes fadeInResult {
+            from { opacity: 0; transform: scale(0.95);}
+            to { opacity: 1; transform: scale(1);}
+        }
+        .cat-emoji {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 8px;
+            line-height: 1;
+            filter: drop-shadow(0 2px 2px #d9042920);
+            user-select: none;
+        }
+        /* ======= ESTADOS DE ANEMIA ======= */
+        .normal {
+            background: #ffe3e3;
+            color: #065f46;
+            border-color: #d90429;
+        }
+        .leve {
+            background: #fff0f3;
+            color: var(--rojo-principal);
+            border-color: #d90429;
+        }
+        .moderada {
+            background: #f5e9da;
+            color: var(--rojo-oscuro);
+            border-color: #d90429;
+        }
+        .severa {
+            background: #ff8fa3;
+            color: #991b1b;
+            border-color: #d90429;
+        }
+        .maxima {
+            background: #fff6f8;
+            color: var(--rojo-principal);
+            border-color: #d90429;
+            animation: shake 0.4s;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0);}
+            20% { transform: translateX(-8px);}
+            40% { transform: translateX(8px);}
+            60% { transform: translateX(-8px);}
+            80% { transform: translateX(8px);}
+            100% { transform: translateX(0);}
+        }
+        /* ======= RESPONSIVE ======= */
+        @media (max-width: 500px) {
+            .container { padding: 18px 5vw 22px 5vw; }
+            h2 { font-size: 1.3rem; }
+        }

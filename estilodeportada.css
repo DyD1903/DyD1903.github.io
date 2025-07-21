@@ -1,0 +1,165 @@
+/* =========================
+   FUERZA ROJA - prueba1.html
+   ========================= */
+
+/* Fuente principal */
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+
+/* Variables de color */
+:root {
+  --rojo-principal: #d90429;
+  --rojo-oscuro: #a30015;
+  --beige: #f5e9da;
+  --blanco: #fff;
+  --gris-oscuro: #222;
+}
+
+/* ========== BODY Y HERO ========== */
+body {
+  background: var(--beige);
+  min-height: 100vh;
+  font-family: 'Rubik Mono One', Arial, sans-serif;
+  margin: 0;
+  color: var(--gris-oscuro);
+  overflow-x: hidden;
+}
+
+.hero {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 0 1rem;
+  overflow: hidden;
+  background: var(--beige);
+}
+
+/* Fondo animado canvas (gotas de sangre) */
+#gooey-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+}
+
+/* ========== HERO CONTENT ========== */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 3em 0 2.5em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 32px rgba(217,4,41,0.13);
+  border-radius: 2.5em;
+  backdrop-filter: blur(8px);
+}
+
+/* ========== TÍTULO PRINCIPAL CON FONDO DE IMAGEN ========== */
+.hero-title {
+  font-family: 'Rubik Mono One', sans-serif;
+  font-size: clamp(2.5rem, 13vw, 6rem);
+  font-weight: 700;
+  color: #d90429;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5em;
+  background: url('123.webp') center/cover;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  word-break: break-word;
+  text-align: center;
+}
+
+.hero-subtitle {
+  color: #2d2d2d;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 2em;
+  letter-spacing: 1px;
+}
+
+/* ========== BOTÓN PRINCIPAL ========== */
+.btn-fuerza {
+  background: linear-gradient(90deg, #d90429 60%, #a30015 100%);
+  color: #fff;
+  border: none;
+  border-radius: 2em;
+  font-weight: 900;
+  font-size: 1.2em;
+  padding: 0.9em 2.5em;
+  margin-bottom: 2em;
+  box-shadow: 0 4px 24px rgba(217,4,41,0.13);
+  letter-spacing: 1px;
+  transition: background 0.2s, transform 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-fuerza:hover {
+  background: linear-gradient(90deg, #a30015 60%, #d90429 100%);
+  color: #f5e9da;
+  transform: scale(1.05);
+}
+
+/* ========== BOTÓN DESCUBRIR ========== */
+.descubrir-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: #fff;
+  color: #d90429;
+  border-radius: 2em;
+  font-weight: 700;
+  font-size: 1.1em;
+  padding: 0.7em 2.2em;
+  box-shadow: 0 2px 12px rgba(217,4,41,0.07);
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  animation: bounce 1.5s infinite;
+}
+
+.descubrir-btn:hover {
+  background: #d90429;
+  color: #fff;
+  transform: scale(1.07);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0);}
+  50% { transform: translateX(-50%) translateY(10px);}
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .hero-content { padding: 1.5em 0.5em 1.2em 0.5em; gap: 1.2em; }
+  .hero-title { font-size: 15vw; }
+  .btn-fuerza { font-size: 1.1em; padding: 1em 2em; }
+}
+@media (max-width: 600px) {
+  .hero-content { padding: 1em 0.2em 0.7em 0.2em; gap: 1em; }
+  .hero-title { font-size: 19vw; }
+  .btn-fuerza { font-size: 1em; padding: 0.8em 1.2em; }
+  .descubrir-btn { font-size: 1em; padding: 0.5em 1.2em; }
+}
+
+/* ========== FIN DE ESTILOS PARA prueba1.html ========== */

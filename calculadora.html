@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Anemia | Fuerza Roja</title>
+    <!-- ======= FUENTE Y ESTILO ======= -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+<link href="estilocalculadora.css" rel="stylesheet">
+</head>
+<body>
+  <!-- =================== CONTENIDO PRINCIPAL =================== -->
+  <div class="main-wrapper">
+    <div class="intro-box">
+      <!-- ======= CABECERA Y DESCRIPCIÓN ======= -->
+      <div class="intro-header">
+        <span class="icon">🩸</span>
+        <h1>Calculadora de Anemia</h1>
+        <div class="desc">Descubre tu nivel de hemoglobina y recibe recomendaciones personalizadas para tu salud.</div>
+      </div>
+      <!-- ======= CALCULADORA DE ANEMIA ======= -->
+       <!-- ...existing code... -->
+<div class="container">
+  <div class="japan-deco">
+    <img src="https://res.cloudinary.com/dbfrmfmd8/image/upload/f_auto,q_auto,w_400,h_300,c_fill/v1752963070/444_iiaa4n.png" alt="Decorativo" style="width:60px; height:60px; border-radius:50%; object-fit:cover;">
+  </div>
+
+        <label for="gender">Sexo</label>
+        <select id="gender">
+            <option>Masculino</option>
+            <option>Femenino</option>
+        </select>
+        <label for="age">Edad (años)</label>
+        <input type="number" id="age" placeholder="Ej: 35">
+        <label for="hemoglobin">Hemoglobina (g/dL)</label>
+        <input type="number" id="hemoglobin" step="0.1" placeholder="Ej: 12.5">
+        <button onclick="calcular()">Calcular</button>
+        <div id="resultado" class="result"></div>
+        <!-- ======= BOTÓN VOLVER AL INICIO ======= -->
+        <div id="volver-inicio-container" style="display:none; margin-top:18px; text-align:center;">
+          <a href="index.html" style="background:linear-gradient(90deg,#d90429 60%,#a30015 100%);color:#fff;padding:12px 32px;border-radius:12px;text-decoration:none;font-weight:900;box-shadow:0 2px 12px #d9042920;transition:background 0.2s;display:inline-block;">Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =================== SCRIPT DE LÓGICA DE CALCULADORA =================== -->
+  <script>
+    function calcular() {
+        var sexo = document.getElementById('gender').value;
+        var hb = document.getElementById('hemoglobin').value;
+        var res = document.getElementById('resultado');
+        var mensaje = "";
+        var clase = "";
+        var gato = "";
+        var infoExtra = "";
+        var maximo = 18;
+        if (hb === "" || hb <= 0) {
+            mensaje = "Por favor ingresa un valor válido de hemoglobina.";
+            clase = "severa";
+            infoExtra = "";
+        } else if (hb > maximo) {
+            mensaje = "¡Wow! Ese valor es muy alto.<br>Por favor revisa tu dato.";
+            clase = "maxima";
+            infoExtra = "";
+        } else {
+            hb = hb * 1;
+            var limite = (sexo === "Masculino") ? 13 : 12;
+            if (hb >= limite) {
+                mensaje = "¡Nivel normal de hemoglobina!";
+                clase = "normal";
+                infoExtra = `<div style='margin-top:14px;font-size:1em;color:#065f46;'>¡Felicidades! Tu nivel de hemoglobina es adecuado.<br>Recuerda mantener una alimentación balanceada y realizar chequeos periódicos.</div>
+                <a href='ElRecetario.html' style='display:inline-block;margin-top:16px;padding:10px 28px;background:linear-gradient(90deg,#d90429 60%,#a30015 100%);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;box-shadow:0 2px 12px #d9042920;transition:background 0.2s;'>Ver recetas saludables</a>`;
+            } else if (hb >= 11) {
+                mensaje = "Anemia leve.";
+                clase = "leve";
+                infoExtra = `<div style='margin-top:14px;font-size:1em;color:#d90429;'>Tienes anemia leve. Es importante mejorar tu alimentación y consultar a un profesional de la salud.<br>Te recomendamos consumir alimentos ricos en hierro y vitamina C.</div>
+                <a href='ElRecetario.html' style='display:inline-block;margin-top:16px;padding:10px 28px;background:linear-gradient(90deg,#d90429 60%,#a30015 100%);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;box-shadow:0 2px 12px #d9042920;transition:background 0.2s;'>Ver recetas recomendadas</a>`;
+            } else if (hb >= 8) {
+                mensaje = "Anemia moderada.";
+                clase = "moderada";
+                infoExtra = `<div style='margin-top:14px;font-size:1em;color:#a30015;'>Tienes anemia moderada. Es fundamental que acudas a un médico y sigas una dieta rica en hierro.<br>No ignores estos resultados.</div>
+                <a href='ElRecetario.html' style='display:inline-block;margin-top:16px;padding:10px 28px;background:linear-gradient(90deg,#d90429 60%,#a30015 100%);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;box-shadow:0 2px 12px #d9042920;transition:background 0.2s;'>Ver recetas recomendadas</a>`;
+            } else {
+                mensaje = "Anemia severa.";
+                clase = "severa";
+                infoExtra = `<div style='margin-top:14px;font-size:1em;color:#991b1b;'>Tienes anemia severa. Debes acudir de inmediato a un profesional de la salud.<br>Mientras tanto, revisa nuestras recetas y consejos para mejorar tu salud.</div>
+                <a href='ElRecetario.html' style='display:inline-block;margin-top:16px;padding:10px 28px;background:linear-gradient(90deg,#d90429 60%,#a30015 100%);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;box-shadow:0 2px 12px #d9042920;transition:background 0.2s;'>Ver recetas recomendadas</a>`;
+            }
+        }
+        res.style.display = "block";
+        res.className = "result " + clase;
+        res.innerHTML = '<span class="cat-emoji">' + gato + '</span>' + mensaje + infoExtra;
+        // Mostrar botón de volver al inicio
+        document.getElementById('volver-inicio-container').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
